@@ -1,1 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>MSIM App</title>
+
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#d4af37">
+
+<link rel="icon" href="assets/icon-192.png">
+
+<link rel="apple-touch-icon"
+href="assets/icon-192.png">
+
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+href="https://fonts.gstatic.com"
+crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap"
+rel="stylesheet">
+
+<link rel="stylesheet"
+href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script src="config.js"></script>
+
+</head>
+
+<body>
+
+<!-- LOGIN PAGE -->
+
+<div id="loginPage" class="login-page">
+
+<img
+src="assets/logo.png"
+class="login-logo">
+
+<h1 class="title">
+MISSION SYEDI IKRAM E MILLAT
+</h1>
+
+<p class="subtitle">
+Kurla West & East Mumbai
+</p>
+
+<input
+type="text"
+id="mobile"
+placeholder="Mobile Number">
+
+<input
+type="password"
+id="password"
+placeholder="Password">
+
+<button
+onclick="login()"
+class="loginBtn">
+
+LOGIN
+
+</button>
+
+<p id="loginStatus"></p>
+
+</div>
+
+<!-- DASHBOARD -->
+
+<div id="dashboard"
+style="display:none;">
+  <!-- TOP HEADER -->
+
+<header class="top-header">
+
+<div class="header-left">
+
+<img
+src="assets/logo.png"
+class="header-logo">
+
+<div>
+
+<h2 class="header-title">
+Mission Syedi Ikram E Millat
+</h2>
+
+<p class="header-subtitle">
+Kurla West & East Mumbai
+(9867310766)
+</p>
+
+</div>
+
+</div>
+
+<div
+class="menu-btn"
+onclick="toggleMenu()">
+
+☰
+
+</div>
+
+</header>
+
+<!-- SIDE MENU -->
+
+<div
+id="sideMenu"
+class="side-menu">
+
+<div class="menu-profile">
+
+<img
+src="assets/logo.png"
+class="menu-logo">
+
+<h3 id="menuMemberName">
+
+Member Name
+
+</h3>
+
+<p>
+
+MSIM MEMBER
+
+</p>
+
+</div>
+
+<button
+onclick="showPage('home');toggleMenu();">
+
+🏠 Home
+
+</button>
+
+<button
+onclick="showPage('profile');toggleMenu();">
+
+👤 My Profile
+
+</button>
+
+<button
+onclick="showPage('duties');toggleMenu();">
+
+📋 My Duties
+
+</button>
+
+<button
+onclick="showPage('announcements');toggleMenu();">
+
+📢 Announcements
+
+</button>
+
+<button
+onclick="showPage('contacts');toggleMenu();">
+
+📞 Contacts
+
+</button>
+
+<button
+onclick="showPage('idcard');toggleMenu();">
+
+🪪 Digital ID Card
+
+</button>
+
+<button
+onclick="logout();">
+
+🚪 Logout
+
+</button>
+
+</div>
+
+<main id="mainContent">
+  <!-- =========================
+     DASHBOARD CONTENT
+========================= -->
+
+<main class="dashboard-content">
+
+  <!-- Welcome Card -->
+  <section class="welcome-card">
+
+    <h2>
+      Assalaamu Alaikum
+    </h2>
+
+    <p id="welcomeName">
+      Welcome, Member
+    </p>
+
+  </section>
+
+  <!-- Member Profile Card -->
+  <section class="member-card">
+
+    <img
+      id="memberPhoto"
+      src="assets/logo.png"
+      alt="Member Photo"
+      class="member-photo"
+    >
+
+    <h2 id="memberName">
+      Member Name
+    </h2>
+
+    <p class="member-id">
+      Member ID :
+      <span id="memberID">MSIM-001</span>
+    </p>
+
+    <div class="member-info">
+
+      <div class="info-box">
+        <span class="label">Branch</span>
+        <span id="memberBranch">Kurla</span>
+      </div>
+
+      <div class="info-box">
+        <span class="label">Status</span>
+        <span id="memberStatus">Active</span>
+      </div>
+
+      <div class="info-box">
+        <span class="label">Joining Date</span>
+        <span id="joiningDate">01 Jan 2026</span>
+      </div>
+
+    </div>
+
+    <button id="openIDCard" class="gold-btn">
+      🪪 View Digital ID Card
+    </button>
+
+  </section>
+
+</main>
