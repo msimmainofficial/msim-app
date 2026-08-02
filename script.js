@@ -6,6 +6,7 @@
 
 
 // Wait for page load
+alert("JS Connected");
 document.addEventListener("DOMContentLoaded", () => {
 // Hide Splash Screen
 
