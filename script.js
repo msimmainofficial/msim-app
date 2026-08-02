@@ -1,285 +1,297 @@
 // ======================================
 // MSIM APP v2
-// script.js PART 1
-// Authentication System
+// SCRIPT PART 1
+// STARTUP + AUTHENTICATION
 // ======================================
 
-
-alert("Script Started");
-
-alert("JS Connected");
 document.addEventListener("DOMContentLoaded", () => {
-// Hide Splash Screen
 
-setTimeout(() => {
-    alert("Timeout Working");
-    const splash =
-    document.getElementById("splashScreen");
+    console.log("MSIM APP v2 Loaded");
 
-    const login =
-    document.getElementById("loginScreen");
+    // Splash Screen
+    setTimeout(() => {
 
-    if (splash) {
-        splash.classList.remove("active");
-    }
+        const splash =
+        document.getElementById("splashScreen");
 
-    if (login) {
-        login.classList.add("active");
-    }
+        const login =
+        document.getElementById("loginScreen");
 
-}, 2000);
-    
+        if (splash) {
+            splash.classList.remove("active");
+        }
+
+        if (login) {
+            login.classList.add("active");
+        }
+
+    }, 2000);
+
     // Service Worker
+    if ("serviceWorker" in navigator) {
 
-    if("serviceWorker" in navigator){
-
-        navigator.serviceWorker.register("./sw.js")
-
-        .then(()=>{
+        navigator.serviceWorker
+        .register("./sw.js")
+        .then(() => {
 
             console.log("PWA Ready");
+
+        })
+        .catch((err) => {
+
+            console.log(err);
 
         });
 
     }
 
-
-
-    console.log("MSIM APP v2 Loaded");
-
-
     checkSession();
-
 
 });
 
 
 // ======================================
-// LOGIN FUNCTION
+// LOGIN
 // ======================================
 
 async function login() {
 
-    const mobile = document.getElementById("mobile").value.trim();
-    const password = document.getElementById("password").value.trim();
+    const mobile =
+    document.getElementById("mobile")?.value.trim();
 
-    const errorBox = document.getElementById("error-message");
-    const loginBtn = document.getElementById("login-btn");
+    const password =
+    document.getElementById("password")?.value.trim();
 
+    const loginBtn =
+    document.getElementById("loginBtn");
+
+    const loginMessage =
+    document.getElementById("loginMessage");
 
     if (!mobile || !password) {
 
-        errorBox.innerHTML = "Please enter mobile number and password";
-        return;
+        if (loginMessage) {
 
-    }
-
-
-    loginBtn.innerHTML = "Checking...";
-    loginBtn.disabled = true;
-
-
-    try {
-
-
-        const { data, error } = await supabase
-            .from("members")
-            .select("*")
-            .eq("mobile", mobile)
-            .eq("password", password)
-            .single();
-
-
-
-        if (error || !data) {
-
-            errorBox.innerHTML = "Invalid mobile number or password";
-
-            loginBtn.innerHTML = "Login";
-            loginBtn.disabled = false;
-
-            return;
+            loginMessage.innerHTML =
+            "Please enter mobile number and password";
 
         }
 
+        return;
+    }
 
+    if (loginBtn) {
 
-        // Save User Session
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = "Checking...";
+
+    }
+
+    try {
+
+        const { data, error } =
+        await supabase
+        .from("members")
+        .select("*")
+        .eq("mobile", mobile)
+        .eq("password", password)
+        .single();
+
+        if (error || !data) {
+
+            if (loginMessage) {
+
+                loginMessage.innerHTML =
+                "Invalid Mobile Number or Password";
+
+            }
+
+            if (loginBtn) {
+
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = "Login";
+
+            }
+
+            return;
+        }
 
         localStorage.setItem(
             "msim_user",
             JSON.stringify(data)
         );
 
-
-        errorBox.innerHTML = "";
-
-
         showDashboard(data);
-
-
 
     } catch (err) {
 
-
         console.log(err);
 
-        errorBox.innerHTML =
-        "Something went wrong. Try again";
+        if (loginMessage) {
 
+            loginMessage.innerHTML =
+            "Login Failed";
+
+        }
 
     }
 
+    if (loginBtn) {
 
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = "Login";
 
-    loginBtn.innerHTML = "Login";
-    loginBtn.disabled = false;
-
+    }
 
 }
 
 
-
 // ======================================
-// SESSION CHECK
+// CHECK SESSION
 // ======================================
 
-function checkSession(){
-
+function checkSession() {
 
     const user =
     localStorage.getItem("msim_user");
 
-
-    if(user){
-
-        const data = JSON.parse(user);
-
-        showDashboard(data);
-
+    if (!user) {
+        return;
     }
 
+    showDashboard(JSON.parse(user));
+
+}
+
+function checkSession() {
+
+    const user =
+    localStorage.getItem("msim_user");
+
+    if (!user) {
+        return;
+    }
+
+    showDashboard(JSON.parse(user));
 
 }
 
 
 
-// ======================================
-// LOGOUT
-// ======================================
+//
+// Yahan se Part 2 start
+//
 
-function logout(){
-
-
-    localStorage.removeItem("msim_user");
-
-
-    location.reload();
-
+function loadMemberData() {
 
 }
 
-
-
 // ======================================
-// DASHBOARD PLACEHOLDER
+// MSIM APP v2
+// SCRIPT PART 2
+// DASHBOARD + MEMBER DATA
 // ======================================
 
-function showDashboard(user){
+function showDashboard(user) {
 
-
-    console.log("Logged In User:", user);
-
-
-    const loginPage =
-    document.getElementById("login-page");
-
+    const loginScreen =
+    document.getElementById("loginScreen");
 
     const dashboard =
     document.getElementById("dashboard");
 
+    if (loginScreen) {
 
-
-    if(loginPage){
-
-        loginPage.style.display = "none";
+        loginScreen.classList.remove("active");
 
     }
 
+    if (dashboard) {
 
-
-    if(dashboard){
-
-        dashboard.style.display = "block";
+        dashboard.classList.add("active");
 
     }
 
+    loadMemberData();
+
+    loadAnnouncements();
+
+    loadDuties();
 
 }
-// ======================================
-// MSIM APP v2
-// script.js PART 2
-// Member Dashboard System
-// ======================================
 
 
 // ======================================
 // LOAD MEMBER DATA
 // ======================================
 
-function loadMemberData(){
-
+function loadMemberData() {
 
     const user =
     localStorage.getItem("msim_user");
 
-
-    if(!user){
-
+    if (!user) {
         return;
-
     }
 
+    const member =
+    JSON.parse(user);
 
-    const member = JSON.parse(user);
+    const setText = (id, value) => {
 
+        const el =
+        document.getElementById(id);
 
-    document.getElementById("member-name").innerHTML =
-    member.name || "Member";
+        if (el) {
 
+            el.innerHTML =
+            value || "-";
 
-    document.getElementById("member-id").innerHTML =
-    member.member_id || "-";
+        }
 
+    };
 
-    document.getElementById("member-mobile").innerHTML =
-    member.mobile || "-";
+    setText(
+        "member-name",
+        member.name
+    );
 
+    setText(
+        "member-id",
+        member.member_id
+    );
 
-    document.getElementById("member-branch").innerHTML =
-    member.branch || "-";
+    setText(
+        "member-mobile",
+        member.mobile
+    );
 
+    setText(
+        "member-branch",
+        member.branch
+    );
 
-    document.getElementById("member-department").innerHTML =
-    member.department || "-";
+    setText(
+        "member-department",
+        member.department
+    );
 
+    setText(
+        "member-status",
+        member.status
+    );
 
-    document.getElementById("member-status").innerHTML =
-    member.status || "-";
-
-
-    document.getElementById("member-date").innerHTML =
-    member.joining_date || "-";
-
-
-
-    // Profile Photo
+    setText(
+        "member-date",
+        member.joining_date
+    );
 
     const photo =
-    document.getElementById("profile-photo");
+    document.getElementById(
+        "profile-photo"
+    );
 
-
-    if(photo){
+    if (photo) {
 
         photo.src =
         member.photo ||
@@ -287,1177 +299,882 @@ function loadMemberData(){
 
     }
 
-
 }
 
 
-
 // ======================================
-// SHOW DASHBOARD
+// LOGOUT
 // ======================================
 
-function showDashboard(user){
+function logout() {
 
+    localStorage.removeItem(
+        "msim_user"
+    );
 
-    const loginPage =
-    document.getElementById("login-page");
-
-
-    const dashboard =
-    document.getElementById("dashboard");
-
-
-
-    if(loginPage){
-
-        loginPage.style.display="none";
-
-    }
-
-
-
-    if(dashboard){
-
-        dashboard.style.display="block";
-
-    }
-
-
-
-    loadMemberData();
-
+    location.reload();
 
 }
 
-
-
-// ======================================
-// UPDATE PROFILE (BASE)
-// ======================================
-
-async function updateProfile(){
-
-
-    console.log("Profile update system coming soon");
-
-
-}
-
-
-
-// ======================================
-// UPLOAD PHOTO (BASE)
-// ======================================
-
-async function uploadPhoto(){
-
-
-    console.log("Photo upload system coming soon");
-
-
-}
 // ======================================
 // MSIM APP v2
-// script.js PART 3
-// Navigation System
+// SCRIPT PART 3
+// DUTIES SYSTEM
 // ======================================
 
-
-// ======================================
-// TOGGLE SIDEBAR
-// ======================================
-
-function toggleSidebar(){
-
-
-    const sidebar =
-    document.getElementById("sidebar");
-
-
-    if(sidebar){
-
-        sidebar.classList.toggle("active");
-
-    }
-
-
-}
-
-
-
-// ======================================
-// CLOSE SIDEBAR
-// ======================================
-
-function closeSidebar(){
-
-
-    const sidebar =
-    document.getElementById("sidebar");
-
-
-    if(sidebar){
-
-        sidebar.classList.remove("active");
-
-    }
-
-
-}
-
-
-
-// ======================================
-// SHOW PAGE SYSTEM
-// ======================================
-
-function showPage(page){
-
-
-    const pages =
-    document.querySelectorAll(".app-page");
-
-
-    pages.forEach(section => {
-
-        section.style.display="none";
-
-    });
-
-
-
-    const selectedPage =
-    document.getElementById(page);
-
-
-
-    if(selectedPage){
-
-        selectedPage.style.display="block";
-
-    }
-
-
-
-    closeSidebar();
-
-
-}
-
-
-
-// ======================================
-// DEFAULT PAGE
-// ======================================
-
-function openDashboard(){
-
-
-    showPage("dashboard-home");
-
-
-}
-// ======================================
-// MSIM APP v2
-// script.js PART 4
-// Duties + Announcements + Contacts
-// ======================================
-
-
-
-// ======================================
-// LOAD DUTIES
-// ======================================
-
-async function loadDuties(){
-
+async function loadDuties() {
 
     const user =
-    JSON.parse(localStorage.getItem("msim_user"));
+    JSON.parse(
+        localStorage.getItem(
+            "msim_user"
+        )
+    );
 
-
-    if(!user){
-
+    if (!user) {
         return;
-
     }
 
+    try {
 
-    try{
-
-
-        const {data,error} =
+        const { data, error } =
         await supabase
         .from("duties")
         .select("*")
-        .eq("member_id", user.member_id);
+        .eq(
+            "member_id",
+            user.member_id
+        );
 
-
-
-        if(error){
+        if (error) {
 
             console.log(error);
             return;
 
         }
 
+        displayDuties(
+            data || []
+        );
 
-
-        displayDuties(data);
-
-
-
-    }catch(err){
+    } catch (err) {
 
         console.log(err);
 
     }
 
-
 }
-
 
 
 // ======================================
 // DISPLAY DUTIES
 // ======================================
 
-function displayDuties(duties){
-
+function displayDuties(duties) {
 
     const box =
-    document.getElementById("duties-list");
+    document.getElementById(
+        "duties-list"
+    );
 
-
-    if(!box){
-
+    if (!box) {
         return;
-
     }
 
+    box.innerHTML = "";
 
+    if (duties.length === 0) {
 
-    box.innerHTML="";
+        box.innerHTML = `
+        <div class="empty-box">
+            No Duties Assigned
+        </div>
+        `;
 
+        return;
+    }
 
-
-    duties.forEach(item=>{
-
+    duties.forEach(item => {
 
         box.innerHTML += `
-
         <div class="duty-card">
 
-            <h3>${item.title}</h3>
+            <h3>
+                ${item.title || ""}
+            </h3>
 
-            <p>${item.description}</p>
+            <p>
+                ${item.description || ""}
+            </p>
 
             <span>
-            ${item.status}
+                ${item.status || "Pending"}
             </span>
 
         </div>
-
         `;
 
-
     });
-
 
 }
 
 
-
-
 // ======================================
-// LOAD ANNOUNCEMENTS
+// REFRESH DUTIES
 // ======================================
 
-async function loadAnnouncements(){
+function refreshDuties() {
 
+    loadDuties();
 
-    try{
+}
 
+// ======================================
+// MSIM APP v2
+// SCRIPT PART 4
+// ANNOUNCEMENTS SYSTEM
+// ======================================
 
-        const {data,error} =
+async function loadAnnouncements() {
+
+    try {
+
+        const { data, error } =
         await supabase
         .from("announcements")
         .select("*")
-        .order("created_at",
-        {ascending:false});
+        .order(
+            "created_at",
+            { ascending: false }
+        );
 
-
-
-        if(error){
+        if (error) {
 
             console.log(error);
             return;
 
         }
 
+        displayAnnouncements(
+            data || []
+        );
 
-
-        displayAnnouncements(data);
-
-
-
-    }catch(err){
+    } catch (err) {
 
         console.log(err);
 
     }
 
-
 }
-
 
 
 // ======================================
 // DISPLAY ANNOUNCEMENTS
 // ======================================
 
-function displayAnnouncements(data){
-
+function displayAnnouncements(
+    announcements
+) {
 
     const box =
-    document.getElementById("announcement-list");
+    document.getElementById(
+        "announcements-list"
+    );
 
+    if (!box) {
+        return;
+    }
 
-    if(!box){
+    box.innerHTML = "";
+
+    if (
+        announcements.length === 0
+    ) {
+
+        box.innerHTML = `
+        <div class="empty-box">
+            No Announcements Available
+        </div>
+        `;
 
         return;
 
     }
 
-
-
-    box.innerHTML="";
-
-
-
-    data.forEach(item=>{
-
+    announcements.forEach(item => {
 
         box.innerHTML += `
 
         <div class="announcement-card">
 
-            <h3>${item.title}</h3>
+            <h3>
+                ${item.title || ""}
+            </h3>
 
-            <p>${item.description}</p>
+            <p>
+                ${item.message || ""}
+            </p>
+
+            <small>
+                ${item.created_at || ""}
+            </small>
 
         </div>
 
         `;
 
+    });
+
+}
+
+
+// ======================================
+// REFRESH ANNOUNCEMENTS
+// ======================================
+
+function refreshAnnouncements() {
+
+    loadAnnouncements();
+
+}
+
+// ======================================
+// MSIM APP v2
+// SCRIPT PART 5
+// NAVIGATION SYSTEM
+// ======================================
+
+function showScreen(screenId) {
+
+    const screens =
+    document.querySelectorAll(".screen");
+
+    screens.forEach(screen => {
+
+        screen.classList.remove("active");
 
     });
 
+    const target =
+    document.getElementById(screenId);
+
+    if (target) {
+
+        target.classList.add("active");
+
+    }
 
 }
 
 
-
-
-
 // ======================================
-// LOAD CONTACTS
+// DASHBOARD
 // ======================================
 
-async function loadContacts(){
+function openDashboard() {
 
-
-    try{
-
-
-        const {data,error} =
-        await supabase
-        .from("contacts")
-        .select("*");
-
-
-
-        if(error){
-
-            console.log(error);
-            return;
-
-        }
-
-
-
-        const box =
-        document.getElementById("contact-list");
-
-
-
-        if(!box){
-
-            return;
-
-        }
-
-
-
-        box.innerHTML="";
-
-
-
-        data.forEach(person=>{
-
-
-            box.innerHTML += `
-
-            <div class="contact-card">
-
-                <h3>
-                ${person.name}
-                </h3>
-
-                <p>
-                ${person.designation}
-                </p>
-
-                <p>
-                ${person.mobile}
-                </p>
-
-            </div>
-
-            `;
-
-
-        });
-
-
-
-    }catch(err){
-
-        console.log(err);
-
-    }
-
-
-}
-// ======================================
-// MSIM APP v2
-// script.js PART 5
-// Digital ID Card + Downloads
-// ======================================
-
-
-
-// ======================================
-// GENERATE DIGITAL ID CARD
-// ======================================
-
-function generateIDCard(){
-
-
-    const user =
-    JSON.parse(localStorage.getItem("msim_user"));
-
-
-
-    if(!user){
-
-        return;
-
-    }
-
-
-
-    document.getElementById("id-name").innerHTML =
-    user.name || "-";
-
-
-    document.getElementById("id-member").innerHTML =
-    user.member_id || "-";
-
-
-    document.getElementById("id-branch").innerHTML =
-    user.branch || "-";
-
-
-    document.getElementById("id-department").innerHTML =
-    user.department || "-";
-
-
-
-    const img =
-    document.getElementById("id-photo");
-
-
-
-    if(img){
-
-        img.src =
-        user.photo ||
-        "./assets/default-avatar.png";
-
-    }
-
-
+    showScreen("dashboard");
 
 }
 
 
-
-
 // ======================================
-// DOWNLOAD ID CARD (BASE)
+// PROFILE
 // ======================================
 
-function downloadIDCard(){
+function openProfile() {
 
-
-    const card =
-    document.getElementById("digital-id-card");
-
-
-
-    if(!card){
-
-        alert("ID Card not found");
-
-        return;
-
-    }
-
-
-
-    console.log("ID Card download system ready");
-
-
-    // Future:
-    // html2canvas + PDF generation
-
+    showScreen("profileScreen");
 
 }
 
 
-
-
 // ======================================
-// LOAD DOWNLOADS
+// DUTIES
 // ======================================
 
-async function loadFiles(){
+function openDuties() {
 
+    showScreen("dutiesScreen");
 
-    console.log(
-    "Downloads system ready"
-    );
-
-
-    /*
-    
-    Future Supabase Storage:
-
-    - Certificates
-    - Notices
-    - Documents
-    - Forms
-
-    */
-
-}
-// ======================================
-// MSIM APP v2
-// script.js PART 6
-// Admin Panel System
-// ======================================
-
-
-
-// ======================================
-// CHECK ADMIN
-// ======================================
-
-async function checkAdmin(){
-
-
-    const user =
-    JSON.parse(localStorage.getItem("msim_user"));
-
-
-
-    if(!user){
-
-        return false;
-
-    }
-
-
-
-    if(user.role === "admin" || user.role === "super_admin"){
-
-        return true;
-
-    }
-
-
-    return false;
-
+    loadDuties();
 
 }
 
 
-
 // ======================================
-// ADD MEMBER
+// ANNOUNCEMENTS
 // ======================================
 
-async function addMember(memberData){
+function openAnnouncements() {
 
+    showScreen("announcementsScreen");
 
-    try{
-
-
-        const {data,error} =
-        await supabase
-        .from("members")
-        .insert([memberData]);
-
-
-
-        if(error){
-
-            console.log(error);
-
-            alert("Member add failed");
-
-            return;
-
-        }
-
-
-
-        alert("Member Added Successfully");
-
-
-    }
-    catch(err){
-
-        console.log(err);
-
-    }
-
+    loadAnnouncements();
 
 }
 
 
-
-
 // ======================================
-// EDIT MEMBER
+// CONTACTS
 // ======================================
 
-async function editMember(id, updateData){
+function openContacts() {
 
-
-    try{
-
-
-        const {data,error} =
-        await supabase
-        .from("members")
-        .update(updateData)
-        .eq("id",id);
-
-
-
-        if(error){
-
-            console.log(error);
-
-            return;
-
-        }
-
-
-
-        alert("Member Updated");
-
-
-    }
-    catch(err){
-
-        console.log(err);
-
-    }
-
+    showScreen("contactsScreen");
 
 }
 
 
-
-
-
 // ======================================
-// DELETE MEMBER
+// ABOUT MISSION
 // ======================================
 
-async function deleteMember(id){
-
-
-
-    let confirmDelete =
-    confirm(
-    "Delete this member?"
-    );
-
-
-
-    if(!confirmDelete){
-
-        return;
-
-    }
-
-
-
-    const {error} =
-    await supabase
-    .from("members")
-    .delete()
-    .eq("id",id);
-
-
-
-    if(error){
-
-        console.log(error);
-
-        return;
-
-    }
-
-
+function showAbout() {
 
     alert(
-    "Member Deleted"
+        "Mission Syedi Ikram E Millat\nVersion 2.0.0"
     );
-
 
 }
 
 
-
-
-
 // ======================================
-// SEARCH MEMBERS
+// CONTACT ADMIN
 // ======================================
 
-async function searchMembers(keyword){
+function contactAdmin() {
 
+    window.location.href =
+    "tel:+919867310766";
 
+}
 
-    try{
+// ======================================
+// MSIM APP v2
+// SCRIPT PART 6
+// PROFILE SYSTEM
+// ======================================
 
+async function updateProfile() {
 
-        const {data,error} =
+    const user =
+    JSON.parse(
+        localStorage.getItem(
+            "msim_user"
+        )
+    );
+
+    if (!user) {
+        return;
+    }
+
+    try {
+
+        const { error } =
         await supabase
         .from("members")
-        .select("*")
-        .ilike(
-        "name",
-        `%${keyword}%`
+        .update({
+
+            name:
+            document.getElementById(
+                "edit-name"
+            )?.value || user.name,
+
+            mobile:
+            document.getElementById(
+                "edit-mobile"
+            )?.value || user.mobile
+
+        })
+        .eq(
+            "member_id",
+            user.member_id
         );
 
-
-
-        if(error){
+        if (error) {
 
             console.log(error);
+            alert(
+                "Profile Update Failed"
+            );
 
             return;
 
         }
 
-
-
-        console.log(
-        data
+        alert(
+            "Profile Updated Successfully"
         );
 
-
-
-    }
-    catch(err){
+    } catch (err) {
 
         console.log(err);
 
     }
 
-
 }
-// ======================================
-// MSIM APP v2
-// script.js PART 7
-// Supabase Storage System
-// ======================================
-
 
 
 // ======================================
-// UPLOAD PROFILE PHOTO
+// PHOTO UPLOAD
 // ======================================
 
-async function uploadPhoto(){
-
+async function uploadPhoto() {
 
     const fileInput =
-    document.getElementById("photo-upload");
+    document.getElementById(
+        "photoInput"
+    );
 
+    if (
+        !fileInput ||
+        !fileInput.files.length
+    ) {
+        return;
+    }
 
     const file =
     fileInput.files[0];
 
+    const fileName =
+    Date.now() +
+    "-" +
+    file.name;
 
-    if(!file){
+    try {
 
-        alert("Select photo first");
-
-        return;
-
-    }
-
-
-
-    const user =
-    JSON.parse(
-    localStorage.getItem("msim_user")
-    );
-
-
-
-    if(!user){
-
-        return;
-
-    }
-
-
-
-    try{
-
-
-        const fileName =
-        "profile_" +
-        user.member_id +
-        "_" +
-        Date.now();
-
-
-
-        const {data,error} =
-        await supabase
-        .storage
-        .from("profile-images")
+        const { error } =
+        await supabase.storage
+        .from("member-photos")
         .upload(
             fileName,
             file
         );
 
-
-
-        if(error){
+        if (error) {
 
             console.log(error);
-
-            alert("Upload failed");
+            alert(
+                "Photo Upload Failed"
+            );
 
             return;
 
         }
 
+        const {
+            data
+        } =
+        supabase.storage
+        .from("member-photos")
+        .getPublicUrl(
+            fileName
+        );
 
+        const user =
+        JSON.parse(
+            localStorage.getItem(
+                "msim_user"
+            )
+        );
 
-
-        const {data:urlData} =
-        supabase
-        .storage
-        .from("profile-images")
-        .getPublicUrl(fileName);
-
-
-
-        const photoURL =
-        urlData.publicUrl;
-
-
-
-
-        // Update Database
+        if (!user) {
+            return;
+        }
 
         await supabase
         .from("members")
         .update({
-            photo: photoURL
+
+            photo:
+            data.publicUrl
+
         })
         .eq(
-            "id",
-            user.id
+            "member_id",
+            user.member_id
         );
 
-
-
         user.photo =
-        photoURL;
-
-
+        data.publicUrl;
 
         localStorage.setItem(
             "msim_user",
             JSON.stringify(user)
         );
 
-
-
-        alert(
-        "Photo Updated Successfully"
-        );
-
-
-
         loadMemberData();
 
+        alert(
+            "Photo Uploaded"
+        );
 
-
-    }
-    catch(err){
+    } catch (err) {
 
         console.log(err);
 
     }
 
-
 }
 
-
-
-
-// ======================================
-// FILE UPLOAD SYSTEM
-// ======================================
-
-async function uploadFile(){
-
-
-    console.log(
-    "Document upload system ready"
-    );
-
-
-    /*
-    
-    Future Storage:
-
-    - Certificates
-    - Notices
-    - Forms
-    - Documents
-
-    */
-
-
-}
 // ======================================
 // MSIM APP v2
-// script.js PART 8
-// Security + Error Handling
+// SCRIPT PART 7
+// CONTACTS DIRECTORY
 // ======================================
 
+let contactsData = [];
 
 
 // ======================================
-// SESSION PROTECTION
+// LOAD CONTACTS
 // ======================================
 
-function protectPage(){
+async function loadContacts() {
 
+    try {
 
-    const user =
-    localStorage.getItem("msim_user");
+        const { data, error } =
+        await supabase
+        .from("members")
+        .select("*")
+        .order(
+            "name",
+            { ascending: true }
+        );
 
+        if (error) {
 
-
-    if(!user){
-
-
-        const dashboard =
-        document.getElementById("dashboard");
-
-
-        if(dashboard){
-
-            dashboard.style.display="none";
+            console.log(error);
+            return;
 
         }
 
+        contactsData =
+        data || [];
 
-        const loginPage =
-        document.getElementById("login-page");
+        displayContacts(
+            contactsData
+        );
 
+    } catch (err) {
 
-        if(loginPage){
-
-            loginPage.style.display="block";
-
-        }
-
-
-        return false;
+        console.log(err);
 
     }
-
-
-    return true;
-
 
 }
 
 
-
-
-
 // ======================================
-// CLEAR SESSION
+// DISPLAY CONTACTS
 // ======================================
 
-function clearSession(){
+function displayContacts(list) {
 
-
-    localStorage.removeItem(
-    "msim_user"
+    const box =
+    document.getElementById(
+        "contacts-list"
     );
 
-
-    localStorage.removeItem(
-    "msim_admin"
-    );
-
-
-}
-
-
-
-
-
-// ======================================
-// LOADING MESSAGE
-// ======================================
-
-function showLoading(message="Loading..."){
-
-
-    const loader =
-    document.getElementById("loader");
-
-
-    if(loader){
-
-        loader.innerHTML = message;
-
-        loader.style.display="block";
-
+    if (!box) {
+        return;
     }
 
+    box.innerHTML = "";
 
-}
+    if (list.length === 0) {
 
-
-
-
-function hideLoading(){
-
-
-    const loader =
-    document.getElementById("loader");
-
-
-    if(loader){
-
-        loader.style.display="none";
-
-    }
-
-
-}
-
-
-
-
-
-// ======================================
-// TOAST MESSAGE
-// ======================================
-
-function showToast(message,type="success"){
-
-
-
-    const toast =
-    document.getElementById("toast");
-
-
-
-    if(!toast){
-
-        alert(message);
+        box.innerHTML = `
+        <div class="empty-box">
+            No Contacts Found
+        </div>
+        `;
 
         return;
 
     }
 
+    list.forEach(member => {
 
+        box.innerHTML += `
 
-    toast.innerHTML = message;
+        <div class="contact-card">
 
+            <h3>
+                ${member.name || ""}
+            </h3>
 
-    toast.className =
-    "toast " + type;
+            <p>
+                ${member.department || ""}
+            </p>
 
+            <p>
+                ${member.mobile || ""}
+            </p>
 
-    toast.style.display="block";
+        </div>
 
+        `;
 
-
-    setTimeout(()=>{
-
-
-        toast.style.display="none";
-
-
-    },3000);
-
-
+    });
 
 }
 
 
-
-
-
 // ======================================
-// GLOBAL ERROR HANDLER
+// SEARCH CONTACTS
 // ======================================
 
-window.onerror = function(
-message,
-source,
-line
-){
+function searchContacts() {
 
+    const keyword =
+    document.getElementById(
+        "contact-search"
+    )?.value
+    .toLowerCase()
+    .trim();
 
-    console.log(
-    "Error:",
-    message,
-    "Line:",
-    line
+    if (!keyword) {
+
+        displayContacts(
+            contactsData
+        );
+
+        return;
+
+    }
+
+    const filtered =
+    contactsData.filter(member =>
+
+        (member.name || "")
+        .toLowerCase()
+        .includes(keyword)
+
+        ||
+
+        (member.department || "")
+        .toLowerCase()
+        .includes(keyword)
+
     );
 
+    displayContacts(
+        filtered
+    );
 
-};
+}
+
+
+// ======================================
+// OPEN CONTACTS SCREEN
+// ======================================
+
+function openContacts() {
+
+    showScreen(
+        "contactsScreen"
+    );
+
+    loadContacts();
+
+}
+
+// ======================================
+// MSIM APP v2
+// SCRIPT PART 8
+// ID CARD + UTILITIES
+// ======================================
+
+
+// ======================================
+// MEMBER ID CARD
+// ======================================
+
+function loadIdCard() {
+
+    const user =
+    JSON.parse(
+        localStorage.getItem(
+            "msim_user"
+        )
+    );
+
+    if (!user) {
+        return;
+    }
+
+    const setValue = (
+        id,
+        value
+    ) => {
+
+        const el =
+        document.getElementById(id);
+
+        if (el) {
+
+            el.innerHTML =
+            value || "-";
+
+        }
+
+    };
+
+    setValue(
+        "idcard-name",
+        user.name
+    );
+
+    setValue(
+        "idcard-memberid",
+        user.member_id
+    );
+
+    setValue(
+        "idcard-branch",
+        user.branch
+    );
+
+    setValue(
+        "idcard-department",
+        user.department
+    );
+
+    const photo =
+    document.getElementById(
+        "idcard-photo"
+    );
+
+    if (photo) {
+
+        photo.src =
+        user.photo ||
+        "./assets/default-avatar.png";
+
+    }
+
+}
+
+
+// ======================================
+// OPEN ID CARD
+// ======================================
+
+function openIdCard() {
+
+    showScreen(
+        "idCardScreen"
+    );
+
+    loadIdCard();
+
+}
+
+
+// ======================================
+// PRINT ID CARD
+// ======================================
+
+function printIdCard() {
+
+    window.print();
+
+}
+
+
+// ======================================
+// COPY MEMBER ID
+// ======================================
+
+function copyMemberId() {
+
+    const user =
+    JSON.parse(
+        localStorage.getItem(
+            "msim_user"
+        )
+    );
+
+    if (!user) {
+        return;
+    }
+
+    navigator.clipboard
+    .writeText(
+        user.member_id || ""
+    );
+
+    alert(
+        "Member ID Copied"
+    );
+
+}
+
+
+// ======================================
+// REFRESH APP
+// ======================================
+
+function refreshApp() {
+
+    location.reload();
+
+}
+
+
+// ======================================
+// CLEAR CACHE
+// ======================================
+
+async function clearAppCache() {
+
+    try {
+
+        const names =
+        await caches.keys();
+
+        await Promise.all(
+
+            names.map(name =>
+
+                caches.delete(name)
+
+            )
+
+        );
+
+        alert(
+            "Cache Cleared"
+        );
+
+    } catch (err) {
+
+        console.log(err);
+
+    }
+
+}
+
+
+// ======================================
+// APP VERSION
+// ======================================
+
+function appVersion() {
+
+    return "2.0.0";
+
+}
+
+
+// ======================================
+// END OF SCRIPT
+// ======================================
+
+console.log(
+    "MSIM APP v2 Ready"
+);
+
