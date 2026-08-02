@@ -16,7 +16,7 @@ setTimeout(() => {
 
     if(splash){
 
-        splash.classList.remove("active");
+        splash.style.display = "none";
 
     }
 
