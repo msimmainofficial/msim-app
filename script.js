@@ -12,18 +12,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 setTimeout(() => {
 
-    const splash = document.getElementById("splashScreen");
-    const login = document.getElementById("loginScreen");
+    const splash =
+    document.getElementById("splashScreen");
 
-    if(splash){
-        splash.style.display = "none";
+    const login =
+    document.getElementById("loginScreen");
+
+    if (splash) {
+        splash.classList.remove("active");
     }
 
-    if(login){
+    if (login) {
         login.classList.add("active");
     }
 
 }, 2000);
+    
     // Service Worker
 
     if("serviceWorker" in navigator){
