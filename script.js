@@ -7,12 +7,19 @@
 
 // Wait for page load
 document.addEventListener("DOMContentLoaded", () => {
-if("serviceWorker" in navigator){
+
+    if("serviceWorker" in navigator){
 
 navigator.serviceWorker.register("./sw.js")
 
 .then(()=>{
+    
+setTimeout(() => {
 
+    document.getElementById("splashScreen").classList.remove("active");
+
+}, 2000);
+    
 console.log("PWA Ready");
 
 });
