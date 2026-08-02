@@ -1,333 +1,714 @@
 /* ==========================================
    MSIM APP v2
-   FINAL SCRIPT
+   Script Part 1
 ========================================== */
 
-const loginPage = document.getElementById("loginPage");
-const dashboard = document.getElementById("dashboard");
+const screens = document.querySelectorAll(".screen");
+const pages = document.querySelectorAll(".page");
 
-const sideMenu = document.getElementById("sideMenu");
+const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 
-// ==========================================
-// MENU
-// ==========================================
+let currentUser = null;
 
-function toggleMenu(){
+/* =========================
+SPLASH SCREEN
+========================= */
 
-    sideMenu.classList.toggle("active");
+window.addEventListener("load", () => {
 
-    overlay.classList.toggle("active");
+setTimeout(() => {
 
-}
+document
+.getElementById("splashScreen")
+.classList.remove("active");
 
-// ==========================================
-// PAGE NAVIGATION
-// ==========================================
+document
+.getElementById("loginScreen")
+.classList.add("active");
 
-function showPage(page){
-
-    document
-        .querySelectorAll(".page")
-        .forEach(p=>p.style.display="none");
-
-    document
-        .getElementById(page)
-        .style.display="block";
-
-    sideMenu.classList.remove("active");
-
-    overlay.classList.remove("active");
-
-}
-
-// ==========================================
-// LOGIN
-// ==========================================
-
-async function login(){
-
-    const mobile =
-        document.getElementById("mobile").value.trim();
-
-    const password =
-        document.getElementById("password").value.trim();
-
-    if(!mobile || !password){
-
-        alert("Enter mobile & password");
-
-        return;
-
-    }
-
-    document
-        .getElementById("loginStatus")
-        .innerHTML="Checking...";
-       try{
-
-        const { data, error } = await supabase
-            .from("members")
-            .select("*")
-            .eq("mobile", mobile)
-            .eq("password", password)
-            .single();
-
-        if(error || !data){
-
-            document
-                .getElementById("loginStatus")
-                .innerHTML="❌ Invalid Mobile or Password";
-
-            return;
-
-        }
-
-        localStorage.setItem(
-            "msim_member",
-            JSON.stringify(data)
-        );
-
-        loadMember(data);
-
-        loginPage.style.display="none";
-
-        dashboard.style.display="block";
-
-        showPage("home");
-
-        refreshDashboard();
-
-    }
-
-    catch(err){
-
-        console.error(err);
-
-        document
-            .getElementById("loginStatus")
-            .innerHTML="❌ Login Failed";
-
-    }
-
-}
-
-// ==========================================
-// LOAD MEMBER
-// ==========================================
-
-function loadMember(member){
-
-    document.getElementById("memberName").textContent =
-        member.name || "-";
-
-    document.getElementById("memberId").textContent =
-        member.member_id || "-";
-
-    document.getElementById("memberBranch").textContent =
-        member.branch || "-";
-
-    document.getElementById("memberStatus").textContent =
-        member.status || "-";
-
-    document.getElementById("joiningDate").textContent =
-        member.joining_date || "-";
-
-    if(member.photo_link){
-
-        document.getElementById("memberPhoto").src =
-            member.photo_link;
-
-    }
-
-    // Profile Page
-
-    document.getElementById("profileName").textContent =
-        member.name || "-";
-
-    document.getElementById("profileMobile").textContent =
-        member.mobile || "-";
-
-    document.getElementById("profileMemberId").textContent =
-        member.member_id || "-";
-
-    document.getElementById("profileBranch").textContent =
-        member.branch || "-";
-
-    document.getElementById("profileStatus").textContent =
-        member.status || "-";
-
-    document.getElementById("profileJoining").textContent =
-        member.joining_date || "-";
-
-    if(member.photo_link){
-
-        document.getElementById("profilePhoto").src =
-            member.photo_link;
-
-        document.getElementById("idPhoto").src =
-            member.photo_link;
-
-    }
-
-    document.getElementById("idName").textContent =
-        member.name || "-";
-
-    document.getElementById("idMemberId").textContent =
-        member.member_id || "-";
-
-    document.getElementById("idBranch").textContent =
-        member.branch || "-";
-
-    document.getElementById("idStatus").textContent =
-        member.status || "-";
-
-}
-/* ==========================================
-   AUTO LOGIN
-========================================== */
-
-window.addEventListener("load", async () => {
-
-    const saved = localStorage.getItem("msim_member");
-
-    if(saved){
-
-        const member = JSON.parse(saved);
-
-        loadMember(member);
-
-        loginPage.style.display = "none";
-
-        dashboard.style.display = "block";
-
-        showPage("home");
-
-        await refreshDashboard();
-
-    }
+},2000);
 
 });
 
-/* ==========================================
-   LOGOUT
-========================================== */
+/* =========================
+SIDEBAR
+========================= */
+
+function toggleSidebar(){
+
+sidebar.classList.toggle("active");
+
+overlay.classList.toggle("active");
+
+}
+
+function closeSidebar(){
+
+sidebar.classList.remove("active");
+
+overlay.classList.remove("active");
+
+}
+
+/* =========================
+PAGE NAVIGATION
+========================= */
+
+function showPage(pageId){
+
+pages.forEach(page=>{
+
+page.classList.remove("active");
+
+});
+
+document
+.getElementById(pageId)
+.classList.add("active");
+
+closeSidebar();
+
+}
+
+/* =========================
+LOGOUT
+========================= */
 
 function logout(){
 
-    localStorage.removeItem("msim_member");
-
-    loginPage.style.display = "flex";
-
-    dashboard.style.display = "none";
-
-    toggleMenu();
+document
+.getElementById("logoutModal")
+.classList.add("active");
 
 }
 
-/* ==========================================
-   DUTIES
-========================================== */
+function closeLogoutModal(){
 
-async function loadDuties(){
-
-    const box = document.getElementById("dutiesList");
-
-    box.innerHTML = "<p>Loading...</p>";
-
-    const { data, error } = await supabase
-        .from("duties")
-        .select("*")
-        .order("id",{ascending:false});
-
-    if(error || !data){
-
-        box.innerHTML = "<p>No Duties Found</p>";
-
-        return;
-
-    }
-
-    box.innerHTML = "";
-
-    data.forEach(item=>{
-
-        box.innerHTML += `
-        <div class="item-card">
-            <h3>${item.title}</h3>
-            <p>${item.description}</p>
-        </div>
-        `;
-
-    });
+document
+.getElementById("logoutModal")
+.classList.remove("active");
 
 }
 
+function confirmLogout(){
+
+localStorage.removeItem("msimUser");
+
+location.reload();
+
+}
+
+/* =========================
+TOAST
+========================= */
+
+function showToast(message){
+
+const toast =
+document.getElementById("toast");
+
+document
+.getElementById("toastMessage")
+.innerText = message;
+
+toast.style.display = "block";
+
+setTimeout(()=>{
+
+toast.style.display="none";
+
+},2500);
+
+}
 /* ==========================================
-   ANNOUNCEMENTS
+   LOGIN & SESSION
 ========================================== */
+
+async function login(){
+
+const mobile =
+document
+.getElementById("mobile")
+.value
+.trim();
+
+const password =
+document
+.getElementById("password")
+.value
+.trim();
+
+const msg =
+document
+.getElementById("loginMessage");
+
+if(!mobile || !password){
+
+msg.innerText =
+"Please enter mobile number and password.";
+
+return;
+
+}
+
+msg.innerText = "Signing in...";
+
+try{
+
+const { data,error } =
+await supabase
+.from("members")
+.select("*")
+.eq("mobile",mobile)
+.eq("password",password)
+.single();
+
+if(error || !data){
+
+msg.innerText =
+"Invalid mobile number or password.";
+
+return;
+
+}
+
+currentUser = data;
+
+localStorage.setItem(
+"msimUser",
+JSON.stringify(data)
+);
+
+loadMemberData(data);
+
+document
+.getElementById("loginScreen")
+.classList.remove("active");
+
+document
+.getElementById("dashboardScreen")
+.classList.add("active");
+
+showPage("homePage");
+
+showToast("Welcome " + data.name);
+
+}catch(err){
+
+console.error(err);
+
+msg.innerText =
+"Login failed. Please try again.";
+
+}
+
+}
+
+/* =========================
+AUTO LOGIN
+========================= */
+
+window.addEventListener("DOMContentLoaded",()=>{
+
+const savedUser =
+localStorage.getItem("msimUser");
+
+if(savedUser){
+
+currentUser =
+JSON.parse(savedUser);
+
+document
+.getElementById("splashScreen")
+.classList.remove("active");
+
+document
+.getElementById("dashboardScreen")
+.classList.add("active");
+
+loadMemberData(currentUser);
+
+showPage("homePage");
+
+}
+
+});
+
+/* =========================
+LOAD MEMBER DATA
+========================= */
+
+function loadMemberData(user){
+
+document.getElementById("memberName").textContent =
+user.name || "-";
+
+document.getElementById("profileName").textContent =
+user.name || "-";
+
+document.getElementById("sidebarName").textContent =
+user.name || "-";
+
+document.getElementById("idName").textContent =
+user.name || "-";
+
+document.getElementById("profileMemberId").textContent =
+user.member_id || "-";
+
+document.getElementById("cardMemberId").textContent =
+user.member_id || "-";
+
+document.getElementById("sidebarMemberId").textContent =
+user.member_id || "-";
+
+document.getElementById("idMemberId").textContent =
+user.member_id || "-";
+
+document.getElementById("profileMobile").textContent =
+user.mobile || "-";
+
+document.getElementById("profileBranch").textContent =
+user.branch || "-";
+
+document.getElementById("cardBranch").textContent =
+user.branch || "-";
+
+document.getElementById("idBranch").textContent =
+user.branch || "-";
+
+document.getElementById("profileDepartment").textContent =
+user.department || "-";
+
+document.getElementById("cardDepartment").textContent =
+user.department || "-";
+
+document.getElementById("idDepartment").textContent =
+user.department || "-";
+
+document.getElementById("profileStatus").textContent =
+user.status || "-";
+
+document.getElementById("cardStatus").textContent =
+user.status || "-";
+
+document.getElementById("idStatus").textContent =
+user.status || "-";
+
+document.getElementById("profileJoiningDate").textContent =
+user.joining_date || "-";
+
+document.getElementById("idJoiningDate").textContent =
+user.joining_date || "-";
+
+const photo =
+user.photo || "assets/default-avatar.png";
+
+document.getElementById("profilePhoto").src = photo;
+document.getElementById("headerAvatar").src = photo;
+document.getElementById("sidebarAvatar").src = photo;
+document.getElementById("idPhoto").src = photo;
+
+}
+/* ==========================================
+   MSIM APP v2
+   Script Part 3
+========================================== */
+
+/* =========================
+LOAD ANNOUNCEMENTS
+========================= */
 
 async function loadAnnouncements(){
 
-    const box = document.getElementById("announcementList");
+try{
 
-    box.innerHTML = "<p>Loading...</p>";
+const {data,error}=await supabase
+.from("announcements")
+.select("*")
+.order("created_at",{ascending:false});
 
-    const { data, error } = await supabase
-        .from("announcements")
-        .select("*")
-        .order("id",{ascending:false});
+if(error) throw error;
 
-    if(error || !data){
+const container=document.getElementById("announcementsContainer");
+const preview=document.getElementById("latestAnnouncements");
 
-        box.innerHTML = "<p>No Announcements Found</p>";
+container.innerHTML="";
+preview.innerHTML="";
 
-        return;
+if(!data || data.length===0){
 
-    }
+container.innerHTML="<p class='empty-text'>No announcements available.</p>";
+preview.innerHTML="<p class='empty-text'>No announcements available.</p>";
 
-    box.innerHTML = "";
-
-    data.forEach(item=>{
-
-        box.innerHTML += `
-        <div class="item-card">
-            <h3>${item.title}</h3>
-            <p>${item.message}</p>
-        </div>
-        `;
-
-    });
+return;
 
 }
 
+data.forEach(item=>{
+
+const card=`
+<div class="announcement-card">
+
+<h3>${item.title}</h3>
+
+<p>${item.description}</p>
+
+<small>${new Date(item.created_at).toLocaleDateString()}</small>
+
+</div>
+`;
+
+container.innerHTML+=card;
+
+});
+
+preview.innerHTML=container.innerHTML;
+
+}catch(err){
+
+console.error(err);
+
+}
+
+}
+
+/* =========================
+LOAD DUTIES
+========================= */
+
+async function loadDuties(){
+
+if(!currentUser) return;
+
+try{
+
+const {data,error}=await supabase
+.from("duties")
+.select("*")
+.eq("member_id",currentUser.member_id);
+
+if(error) throw error;
+
+const box=document.getElementById("dutiesContainer");
+const home=document.getElementById("todayDuties");
+
+box.innerHTML="";
+home.innerHTML="";
+
+if(!data || data.length===0){
+
+box.innerHTML="<p class='empty-text'>No duties assigned.</p>";
+home.innerHTML="<p class='empty-text'>No duties assigned.</p>";
+
+return;
+
+}
+
+data.forEach(duty=>{
+
+const card=`
+<div class="duty-card">
+
+<h3>${duty.title}</h3>
+
+<p>${duty.description}</p>
+
+<small>Status : ${duty.status}</small>
+
+</div>
+`;
+
+box.innerHTML+=card;
+
+});
+
+home.innerHTML=box.innerHTML;
+
+}catch(err){
+
+console.error(err);
+
+}
+
+}
+
+/* =========================
+LOAD CONTACTS
+========================= */
+
+async function loadContacts(){
+
+try{
+
+const {data,error}=await supabase
+.from("contacts")
+.select("*");
+
+if(error) throw error;
+
+const container=document.getElementById("contactsContainer");
+
+container.innerHTML="";
+
+if(!data || data.length===0){
+
+container.innerHTML="<p class='empty-text'>No contacts available.</p>";
+
+return;
+
+}
+
+data.forEach(contact=>{
+
+container.innerHTML+=`
+
+<div class="contact-card">
+
+<h3>${contact.name}</h3>
+
+<p>${contact.designation}</p>
+
+<a href="tel:${contact.mobile}">
+${contact.mobile}
+</a>
+
+</div>
+
+`;
+
+});
+
+}catch(err){
+
+console.error(err);
+
+}
+
+}
+
+/* =========================
+INITIAL DATA
+========================= */
+
+async function initializeApp(){
+
+await loadAnnouncements();
+
+await loadDuties();
+
+await loadContacts();
+
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+setTimeout(()=>{
+
+if(currentUser){
+
+initializeApp();
+
+}
+
+},800);
+
+});
 /* ==========================================
-   REFRESH DASHBOARD
+   ADMIN PANEL & UTILITIES
 ========================================== */
 
-async function refreshDashboard(){
+/* =========================
+SHOW ADMIN PAGE
+========================= */
 
-    await loadDuties();
+function showAdminPage(section){
 
-    await loadAnnouncements();
+const container =
+document.getElementById("adminContent");
+
+container.innerHTML =
+"<h3 style='margin:20px 0'>Loading...</h3>";
+
+switch(section){
+
+case "members":
+
+loadMembers();
+
+break;
+
+case "branches":
+
+loadBranches();
+
+break;
+
+case "departments":
+
+loadDepartments();
+
+break;
+
+case "duties":
+
+loadAdminDuties();
+
+break;
+
+case "announcements":
+
+loadAdminAnnouncements();
+
+break;
+
+case "contacts":
+
+loadAdminContacts();
+
+break;
+
+default:
+
+container.innerHTML="";
 
 }
 
-/* ==========================================
-   SERVICE WORKER
-========================================== */
+}
 
-if("serviceWorker" in navigator){
+/* =========================
+LOAD MEMBERS
+========================= */
 
-    window.addEventListener("load",()=>{
+async function loadMembers(){
 
-        navigator.serviceWorker
-            .register("./sw.js")
-            .then(()=>console.log("SW Registered"))
-            .catch(console.error);
+const container =
+document.getElementById("adminContent");
 
-    });
+try{
+
+const {data,error}=await supabase
+.from("members")
+.select("*")
+.order("name");
+
+if(error) throw error;
+
+container.innerHTML="";
+
+if(!data || data.length===0){
+
+container.innerHTML=
+"<p class='empty-text'>No members found.</p>";
+
+return;
 
 }
 
-console.log("MSIM APP v2 Ready");
+data.forEach(member=>{
+
+container.innerHTML += `
+
+<div class="member-card">
+
+<h3>${member.name}</h3>
+
+<p>ID : ${member.member_id}</p>
+
+<p>Branch : ${member.branch}</p>
+
+<p>Department : ${member.department}</p>
+
+<p>Status : ${member.status}</p>
+
+</div>
+
+`;
+
+});
+
+}catch(err){
+
+console.error(err);
+
+container.innerHTML=
+"<p class='empty-text'>Unable to load members.</p>";
+
+}
+
+}
+
+/* =========================
+PLACEHOLDER FUNCTIONS
+========================= */
+
+async function loadBranches(){}
+async function loadDepartments(){}
+async function loadAdminDuties(){}
+async function loadAdminAnnouncements(){}
+async function loadAdminContacts(){}
+
+/* =========================
+PROFILE
+========================= */
+
+function editProfile(){
+
+showToast("Profile update feature coming soon.");
+
+}
+
+/* =========================
+MEMBER MODAL
+========================= */
+
+function closeMemberModal(){
+
+document
+.getElementById("memberModal")
+.classList.remove("active");
+
+}
+
+function saveMember(){
+
+showToast("Member saved.");
+
+closeMemberModal();
+
+}
+
+/* =========================
+SEARCH
+========================= */
+
+function closeSearch(){
+
+document
+.getElementById("searchModal")
+.classList.remove("active");
+
+}
+
+/* =========================
+ABOUT
+========================= */
+
+function showAbout(){
+
+alert(
+"Mission Syedi Ikram E Millat\nOfficial Mobile Application"
+);
+
+}
+
+/* =========================
+CONTACT ADMIN
+========================= */
+
+function contactAdmin(){
+
+window.location.href =
+"tel:+910000000000";
+
+}
