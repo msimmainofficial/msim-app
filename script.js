@@ -5,13 +5,14 @@
 // ======================================
 
 
-// Wait for page load
+alert("Script Started");
+
 alert("JS Connected");
 document.addEventListener("DOMContentLoaded", () => {
 // Hide Splash Screen
 
 setTimeout(() => {
-
+    alert("Timeout Working");
     const splash =
     document.getElementById("splashScreen");
 
