@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document
         .getElementById("splashScreen")
-        .classList.remove("active");
+        document.getElementById("splashScreen").style.display = "none";;
 
     }, 2000);
 
