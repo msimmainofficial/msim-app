@@ -1,26 +1,32 @@
 {
   "name": "Mission Syedi Ikram E Millat",
   "short_name": "MSIM",
-  "description": "Official Mission Syedi Ikram E Millat App",
-  "start_url": "./",
-  "scope": "./",
+  "description": "Official Mission Syedi Ikram E Millat Mobile Application",
+
+  "start_url": "./index.html",
+
   "display": "standalone",
+
   "orientation": "portrait",
-  "background_color": "#07172b",
+
+  "background_color": "#050b1a",
+
   "theme_color": "#d4af37",
 
   "icons": [
+
     {
-      "src": "assets/icon-192.png",
+      "src": "./assets/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
+
     {
-      "src": "assets/icon-512.png",
+      "src": "./assets/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
+
   ]
+
 }
