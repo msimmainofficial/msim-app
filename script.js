@@ -8,26 +8,40 @@
 // Wait for page load
 document.addEventListener("DOMContentLoaded", () => {
 
+
+    // Splash Screen Hide
+
+    setTimeout(() => {
+
+        document
+        .getElementById("splashScreen")
+        .classList.remove("active");
+
+    }, 2000);
+
+
+
+    // Service Worker
+
     if("serviceWorker" in navigator){
 
-navigator.serviceWorker.register("./sw.js")
+        navigator.serviceWorker.register("./sw.js")
 
-.then(()=>{
-    
-setTimeout(() => {
+        .then(()=>{
 
-    document.getElementById("splashScreen").classList.remove("active");
+            console.log("PWA Ready");
 
-}, 2000);
-    
-console.log("PWA Ready");
+        });
 
-});
+    }
 
-}
+
+
     console.log("MSIM APP v2 Loaded");
 
+
     checkSession();
+
 
 });
 
