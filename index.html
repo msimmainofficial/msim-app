@@ -1,376 +1,1202 @@
-<!-- ==========================
-MSIM APP v2
-LOGIN PAGE
-========================== -->
+<!DOCTYPE html>
+<html lang="en">
 
-<div id="loginPage" class="login-page">
+<head>
 
-    <div class="login-card">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-        <img
-            src="assets/logo.png"
-            class="login-logo"
-            alt="MSIM Logo">
+<title>MSIM App</title>
 
-        <h1 class="login-title">
-            Mission Syedi Ikram E Millat
-        </h1>
+<meta name="theme-color" content="#0A1733">
+<meta name="description"
+content="Official Mission Syedi Ikram E Millat Member Management App">
 
-        <p class="login-subtitle">
-            Kurla West & East Mumbai
-            <br>
-            9867310766
-        </p>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MSIM">
 
-        <input
-            id="mobile"
-            type="text"
-            placeholder="Mobile Number">
+<link rel="manifest" href="manifest.json">
 
-        <input
-            id="password"
-            type="password"
-            placeholder="Password">
+<link rel="icon" sizes="192x192"
+href="assets/icon-192.png">
 
-        <button
-            class="loginBtn"
-            onclick="login()">
+<link rel="apple-touch-icon"
+href="assets/icon-192.png">
 
-            LOGIN
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
 
-        </button>
+<link rel="preconnect"
+href="https://fonts.gstatic.com"
+crossorigin>
 
-        <p id="loginStatus"></p>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap"
+rel="stylesheet">
 
-    </div>
+<link rel="stylesheet"
+href="style.css">
 
-</div>
+</head>
 
-<!-- ==========================
-DASHBOARD
-========================== -->
+<body>
 
-<div
-id="dashboard"
-style="display:none;">
-  <!-- ==========================
-TOP HEADER
-========================== -->
+<!-- ========================= -->
+<!-- APP ROOT -->
+<!-- ========================= -->
 
-<header class="top-header">
+<div id="app">
 
-    <div class="header-left">
-
-        <img
-            src="assets/logo.png"
-            class="header-logo"
-            alt="MSIM Logo">
-
-        <div>
-
-            <h2 class="header-title">
-                Mission Syedi Ikram E Millat
-            </h2>
-
-            <p class="header-subtitle">
-                Kurla West & East Mumbai
-                <br>
-                9867310766
-            </p>
-
-        </div>
-
-    </div>
-
-    <button
-        class="menu-btn"
-        onclick="toggleMenu()">
-
-        ☰
-
-    </button>
-
-</header>
-
-<!-- ==========================
-SIDE MENU
-========================== -->
-
-<nav
-id="sideMenu"
-class="side-menu">
-
-    <div class="menu-header">
-
-        <img
-            src="assets/logo.png"
-            class="menu-logo"
-            alt="Logo">
-
-        <h2>MSIM</h2>
-
-    </div>
-
-    <button onclick="showPage('home')">
-        🏠 Dashboard
-    </button>
-
-    <button onclick="showPage('profile')">
-        👤 My Profile
-    </button>
-
-    <button onclick="showPage('idcard')">
-        🪪 Digital ID Card
-    </button>
-
-    <button onclick="showPage('duties')">
-        📋 Duties
-    </button>
-
-    <button onclick="showPage('announcements')">
-        📢 Announcements
-    </button>
-
-    <button onclick="showPage('contacts')">
-        📞 Contacts
-    </button>
-
-    <button onclick="logout()">
-        🚪 Logout
-    </button>
-
-</nav>
-
-<div
-id="overlay"
-class="overlay"
-onclick="toggleMenu()"></div>
-
-<!-- ==========================
-HOME PAGE
-========================== -->
+<!-- ========================= -->
+<!-- SPLASH SCREEN -->
+<!-- ========================= -->
 
 <section
-id="home"
-class="page">
-  <!-- ==========================
-HOME DASHBOARD
-========================== -->
+id="splashScreen"
+class="screen active">
 
-<h2 class="section-title">
-    Welcome
-</h2>
+<div class="splash-container">
 
-<div class="profile-card">
+<img
+src="assets/logo.png"
+alt="MSIM Logo"
+class="splash-logo">
 
-    <img
-        id="memberPhoto"
-        class="profile-photo"
-        src="assets/logo.png"
-        alt="Member Photo">
-
-    <h2 id="memberName">
-        Member Name
-    </h2>
-
-    <p>
-        <strong>Member ID:</strong>
-        <span id="memberId">---</span>
-    </p>
-
-    <p>
-        <strong>Branch:</strong>
-        <span id="memberBranch">---</span>
-    </p>
-
-    <p>
-        <strong>Status:</strong>
-        <span id="memberStatus">---</span>
-    </p>
-
-    <p>
-        <strong>Joining Date:</strong>
-        <span id="joiningDate">---</span>
-    </p>
-
-</div>
-
-<div class="quick-grid">
-
-    <div class="quick-card"
-         onclick="showPage('idcard')">
-        🪪
-        <span>ID Card</span>
-    </div>
-
-    <div class="quick-card"
-         onclick="showPage('duties')">
-        📋
-        <span>Duties</span>
-    </div>
-
-    <div class="quick-card"
-         onclick="showPage('announcements')">
-        📢
-        <span>Announcements</span>
-    </div>
-
-    <div class="quick-card"
-         onclick="showPage('contacts')">
-        📞
-        <span>Contacts</span>
-    </div>
-
-</div>
-
-</section>
-
-<!-- ==========================
-PROFILE PAGE
-========================== -->
-
-<section
-id="profile"
-class="page"
-style="display:none;">
-  <h2 class="section-title">My Profile</h2>
-
-<div class="profile-card">
-
-    <img
-        id="profilePhoto"
-        class="profile-photo"
-        src="assets/logo.png"
-        alt="Profile">
-
-    <h2 id="profileName">Member Name</h2>
-
-    <p><strong>Mobile:</strong> <span id="profileMobile">---</span></p>
-
-    <p><strong>Member ID:</strong> <span id="profileMemberId">---</span></p>
-
-    <p><strong>Branch:</strong> <span id="profileBranch">---</span></p>
-
-    <p><strong>Status:</strong> <span id="profileStatus">---</span></p>
-
-    <p><strong>Joining Date:</strong> <span id="profileJoining">---</span></p>
-
-</div>
-
-</section>
-
-<!-- ==========================
-DIGITAL ID CARD
-========================== -->
-
-<section
-id="idcard"
-class="page"
-style="display:none;">
-
-<h2 class="section-title">
-Digital ID Card
-</h2>
-
-<div class="id-card">
-
-    <img
-        src="assets/logo.png"
-        class="id-logo"
-        alt="MSIM">
-
-    <img
-        id="idPhoto"
-        class="id-photo"
-        src="assets/logo.png"
-        alt="Member">
-
-    <h2 id="idName">
-        Member Name
-    </h2>
-
-    <p>ID:
-        <span id="idMemberId">
-            ---
-        </span>
-    </p>
-
-    <p>Branch:
-        <span id="idBranch">
-            ---
-        </span>
-    </p>
-
-    <p>Status:
-        <span id="idStatus">
-            ---
-        </span>
-    </p>
-
-</div>
-
-</section>
-
-<!-- ==========================
-DUTIES
-========================== -->
-
-<section
-id="duties"
-class="page"
-style="display:none;">
-
-<h2 class="section-title">
-Live Duties
-</h2>
-
-<div id="dutiesList"></div>
-
-</section>
-
-<!-- ==========================
-ANNOUNCEMENTS
-========================== -->
-
-<section
-id="announcements"
-class="page"
-style="display:none;">
-
-<h2 class="section-title">
-Announcements
-</h2>
-
-<div id="announcementList"></div>
-
-</section>
-
-<!-- ==========================
-CONTACTS
-========================== -->
-
-<section
-id="contacts"
-class="page"
-style="display:none;">
-
-<h2 class="section-title">
-Contacts
-</h2>
-
-<div class="profile-card">
-
-<p>📞 9867310766</p>
-
-<p>📍 Kurla West & East Mumbai</p>
-
-<p>
+<h1 class="app-title">
 Mission Syedi Ikram E Millat
+</h1>
+
+<p class="app-subtitle">
+Official Member Application
+</p>
+
+<div class="loader">
+
+<span></span>
+<span></span>
+<span></span>
+
+</div>
+
+<p class="loading-text">
+Loading...
 </p>
 
 </div>
 
 </section>
+
+<!-- ========================= -->
+<!-- LOGIN SCREEN START -->
+<!-- ========================= -->
+
+<section
+id="loginScreen"
+class="screen">
+
+<div class="login-wrapper">
+
+<div class="login-top">
+
+<img
+src="assets/logo.png"
+class="login-logo"
+alt="Logo">
+
+<h2>
+Welcome Back
+</h2>
+
+<p>
+Sign in to continue
+</p>
+
+</div>
+
+<div class="login-form">
+
+<div class="input-group">
+
+<label>
+Mobile Number
+</label>
+
+<input
+type="tel"
+id="mobile"
+placeholder="Enter Mobile Number"
+autocomplete="tel">
+
+</div>
+
+<div class="input-group">
+
+<label>
+Password
+</label>
+
+<input
+type="password"
+id="password"
+placeholder="Enter Password">
+
+</div>
+
+<button
+id="loginBtn"
+onclick="login()">
+
+Login
+
+</button>
+
+<p
+id="loginMessage"
+class="login-message">
+
+</p>
+<!-- ========================= -->
+<!-- LOGIN OPTIONS -->
+<!-- ========================= -->
+
+<div class="login-extra">
+
+<button
+type="button"
+class="secondary-btn"
+onclick="showAbout()">
+
+About Mission
+
+</button>
+
+<button
+type="button"
+class="secondary-btn"
+onclick="contactAdmin()">
+
+Contact Admin
+
+</button>
+
+</div>
+
+</div>
+
+<div class="login-footer">
+
+<p>
+
+Mission Syedi Ikram E Millat
+
+</p>
+
+<span>
+
+Version 2.0.0
+
+</span>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- MEMBER DASHBOARD -->
+<!-- ========================= -->
+
+<section
+id="dashboardScreen"
+class="screen">
+
+<header class="top-header">
+
+<button
+class="menu-btn"
+onclick="toggleSidebar()">
+
+☰
+
+</button>
+
+<div class="header-title">
+
+<img
+src="assets/logo.png"
+class="header-logo"
+alt="MSIM">
+
+<div>
+
+<h2>
+
+MSIM App
+
+</h2>
+
+<p>
+
+Member Dashboard
+
+</p>
+
+</div>
+
+</div>
+
+<div class="header-right">
+
+<img
+src="assets/default-avatar.png"
+id="headerAvatar"
+class="header-avatar"
+alt="Profile">
+
+</div>
+
+</header>
+
+<!-- ========================= -->
+<!-- SIDEBAR -->
+<!-- ========================= -->
+
+<aside
+id="sidebar"
+class="sidebar">
+
+<div class="sidebar-header">
+
+<img
+src="assets/default-avatar.png"
+id="sidebarAvatar"
+class="sidebar-avatar"
+alt="Avatar">
+
+<h3 id="sidebarName">
+
+Member Name
+
+</h3>
+
+<p id="sidebarMemberId">
+
+MSIM0000
+
+</p>
+
+</div>
+
+<nav class="sidebar-menu">
+
+<button onclick="showPage('homePage')">
+
+🏠 Home
+
+</button>
+
+<button onclick="showPage('profilePage')">
+
+👤 My Profile
+
+</button>
+
+<button onclick="showPage('dutiesPage')">
+
+📋 Duties
+
+</button>
+
+<button onclick="showPage('announcementsPage')">
+
+📢 Announcements
+
+</button>
+
+<button onclick="showPage('contactsPage')">
+
+📞 Contacts
+
+</button>
+
+<button onclick="showPage('downloadsPage')">
+
+📂 Downloads
+
+</button>
+
+<button onclick="showPage('idCardPage')">
+
+🪪 Digital ID Card
+
+</button>
+
+<button
+class="logout-btn"
+onclick="logout()">
+
+Logout
+
+</button>
+
+</nav>
+
+</aside>
+
+<div
+id="overlay"
+class="overlay"
+onclick="closeSidebar()">
+
+</div>
+
+<!-- ========================= -->
+<!-- MAIN CONTENT -->
+<!-- ========================= -->
+
+<main
+id="mainContent">
+
+<section
+id="homePage"
+class="page active">
+
+<div class="welcome-card">
+
+<h2>
+
+Assalamu Alaikum
+
+</h2>
+
+<h3 id="memberName">
+
+Member Name
+
+</h3>
+
+<p>
+
+Welcome to Mission Syedi Ikram E Millat.
+
+</p>
+
+</div>
+
+<div class="quick-stats">
+
+<div class="stat-card">
+
+<span>
+
+Member ID
+
+</span>
+
+<h3 id="cardMemberId">
+
+MSIM0000
+
+</h3>
+
+</div>
+
+<div class="stat-card">
+
+<span>
+
+Branch
+
+</span>
+
+<h3 id="cardBranch">
+
+Loading...
+
+</h3>
+
+</div>
+
+<div class="stat-card">
+
+<span>
+
+Department
+
+</span>
+
+<h3 id="cardDepartment">
+
+Loading...
+
+</h3>
+
+</div>
+
+<div class="stat-card">
+
+<span>
+
+Status
+
+</span>
+
+<h3 id="cardStatus">
+
+Active
+
+</h3>
+
+</div>
+
+</div>
+<!-- ========================= -->
+<!-- RECENT UPDATES -->
+<!-- ========================= -->
+
+<section class="dashboard-section">
+
+<h2 class="section-title">
+
+Latest Announcements
+
+</h2>
+
+<div id="latestAnnouncements"
+class="announcement-preview">
+
+<p class="empty-text">
+
+No announcements available.
+
+</p>
+
+</div>
+
+</section>
+
+<section class="dashboard-section">
+
+<h2 class="section-title">
+
+Today's Duties
+
+</h2>
+
+<div id="todayDuties"
+class="duty-preview">
+
+<p class="empty-text">
+
+No duties assigned.
+
+</p>
+
+</div>
+
+</section>
+
+</section>
+
+<!-- ========================= -->
+<!-- PROFILE PAGE -->
+<!-- ========================= -->
+
+<section
+id="profilePage"
+class="page">
+
+<div class="profile-card">
+
+<div class="profile-top">
+
+<img
+src="assets/default-avatar.png"
+id="profilePhoto"
+class="profile-photo"
+alt="Profile Photo">
+
+<h2 id="profileName">
+
+Member Name
+
+</h2>
+
+<p id="profileRole">
+
+Member
+
+</p>
+
+</div>
+
+<div class="profile-details">
+
+<div class="detail-row">
+<span>Member ID</span>
+<strong id="profileMemberId">MSIM0000</strong>
+</div>
+
+<div class="detail-row">
+<span>Mobile Number</span>
+<strong id="profileMobile">----------</strong>
+</div>
+
+<div class="detail-row">
+<span>Branch</span>
+<strong id="profileBranch">Loading...</strong>
+</div>
+
+<div class="detail-row">
+<span>Department</span>
+<strong id="profileDepartment">Loading...</strong>
+</div>
+
+<div class="detail-row">
+<span>Status</span>
+<strong id="profileStatus">Active</strong>
+</div>
+
+<div class="detail-row">
+<span>Joining Date</span>
+<strong id="profileJoiningDate">--/--/----</strong>
+</div>
+
+</div>
+
+<button
+id="editProfileBtn"
+class="primary-btn"
+onclick="editProfile()">
+
+Update Profile
+
+</button>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- DUTIES PAGE -->
+<!-- ========================= -->
+
+<section
+id="dutiesPage"
+class="page">
+
+<h2 class="page-title">
+
+My Duties
+
+</h2>
+
+<div
+id="dutiesContainer">
+
+<p class="empty-text">
+
+No duties assigned.
+
+</p>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- ANNOUNCEMENTS PAGE -->
+<!-- ========================= -->
+
+<section
+id="announcementsPage"
+class="page">
+
+<h2 class="page-title">
+
+Announcements
+
+</h2>
+
+<div
+id="announcementsContainer">
+
+<p class="empty-text">
+
+No announcements available.
+
+</p>
+
+</div>
+
+</section>
+<!-- ========================= -->
+<!-- CONTACT DIRECTORY -->
+<!-- ========================= -->
+
+<section
+id="contactsPage"
+class="page">
+
+<h2 class="page-title">
+Contact Directory
+</h2>
+
+<div
+id="contactsContainer"
+class="cards-container">
+
+<p class="empty-text">
+No contacts available.
+</p>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- DOWNLOADS -->
+<!-- ========================= -->
+
+<section
+id="downloadsPage"
+class="page">
+
+<h2 class="page-title">
+Downloads
+</h2>
+
+<div
+id="downloadsContainer"
+class="cards-container">
+
+<p class="empty-text">
+No files available.
+</p>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- DIGITAL ID CARD -->
+<!-- ========================= -->
+
+<section
+id="idCardPage"
+class="page">
+
+<div class="id-card">
+
+<div class="id-header">
+
+<img
+src="assets/logo.png"
+class="id-logo"
+alt="MSIM Logo">
+
+<div>
+
+<h2>
+Mission Syedi Ikram E Millat
+</h2>
+
+<p>
+Official Member ID Card
+</p>
+
+</div>
+
+</div>
+
+<div class="id-body">
+
+<img
+src="assets/default-avatar.png"
+id="idPhoto"
+class="id-photo"
+alt="Member">
+
+<div class="id-info">
+
+<h2 id="idName">
+Member Name
+</h2>
+
+<p>
+<strong>ID:</strong>
+<span id="idMemberId">
+MSIM0000
+</span>
+</p>
+
+<p>
+<strong>Branch:</strong>
+<span id="idBranch">
+Loading...
+</span>
+</p>
+
+<p>
+<strong>Department:</strong>
+<span id="idDepartment">
+Loading...
+</span>
+</p>
+
+<p>
+<strong>Status:</strong>
+<span id="idStatus">
+Active
+</span>
+</p>
+
+<p>
+<strong>Joining:</strong>
+<span id="idJoiningDate">
+--/--/----
+</span>
+</p>
+
+</div>
+
+</div>
+
+<div class="id-footer">
+
+<div
+id="qrCode"
+class="qr-placeholder">
+
+QR CODE
+
+</div>
+
+<p>
+Verify this member through the official MSIM database.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- LOADER -->
+<!-- ========================= -->
+
+<div
+id="globalLoader"
+class="global-loader">
+
+<div class="loader-circle"></div>
+
+<p>Please wait...</p>
+
+</div>
+
+</main>
+
+</section>
+<!-- ========================= -->
+<!-- NOTIFICATIONS PAGE -->
+<!-- ========================= -->
+
+<section
+id="notificationsPage"
+class="page">
+
+<h2 class="page-title">
+Notifications
+</h2>
+
+<div
+id="notificationsContainer"
+class="cards-container">
+
+<p class="empty-text">
+No notifications available.
+</p>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- ADMIN PANEL -->
+<!-- ========================= -->
+
+<section
+id="adminPage"
+class="page">
+
+<div class="admin-header">
+
+<h2>
+Admin Panel
+</h2>
+
+<p>
+Member Management System
+</p>
+
+</div>
+
+<div class="admin-grid">
+
+<div class="admin-card"
+onclick="showAdminPage('members')">
+
+<h3>
+👥 Members
+</h3>
+
+<p>
+Manage all members
+</p>
+
+</div>
+
+<div class="admin-card"
+onclick="showAdminPage('branches')">
+
+<h3>
+🏢 Branches
+</h3>
+
+<p>
+Manage branches
+</p>
+
+</div>
+
+<div class="admin-card"
+onclick="showAdminPage('departments')">
+
+<h3>
+📂 Departments
+</h3>
+
+<p>
+Manage departments
+</p>
+
+</div>
+
+<div class="admin-card"
+onclick="showAdminPage('duties')">
+
+<h3>
+📋 Duties
+</h3>
+
+<p>
+Assign member duties
+</p>
+
+</div>
+
+<div class="admin-card"
+onclick="showAdminPage('announcements')">
+
+<h3>
+📢 Announcements
+</h3>
+
+<p>
+Publish announcements
+</p>
+
+</div>
+
+<div class="admin-card"
+onclick="showAdminPage('contacts')">
+
+<h3>
+📞 Contacts
+</h3>
+
+<p>
+Manage contacts
+</p>
+
+</div>
+
+</div>
+
+<div
+id="adminContent">
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- SUCCESS TOAST -->
+<!-- ========================= -->
+
+<div
+id="toast"
+class="toast">
+
+<span id="toastMessage">
+
+Success
+
+</span>
+
+</div>
+
+<!-- ========================= -->
+<!-- LOGOUT MODAL -->
+<!-- ========================= -->
+
+<div
+id="logoutModal"
+class="modal">
+
+<div class="modal-content">
+
+<h3>
+Logout
+</h3>
+
+<p>
+Are you sure you want to logout?
+</p>
+
+<div class="modal-buttons">
+
+<button
+class="cancel-btn"
+onclick="closeLogoutModal()">
+
+Cancel
+
+</button>
+
+<button
+class="logout-confirm-btn"
+onclick="confirmLogout()">
+
+Logout
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+<!-- ========================= -->
+<!-- MEMBER MODAL -->
+<!-- ========================= -->
+
+<div
+id="memberModal"
+class="modal">
+
+<div class="modal-content large">
+
+<div class="modal-header">
+
+<h2>
+Member Details
+</h2>
+
+<button
+class="close-btn"
+onclick="closeMemberModal()">
+
+&times;
+
+</button>
+
+</div>
+
+<div class="modal-body">
+
+<div class="input-group">
+
+<label>Full Name</label>
+
+<input
+type="text"
+id="memberFullName">
+
+</div>
+
+<div class="input-group">
+
+<label>Mobile Number</label>
+
+<input
+type="tel"
+id="memberMobile">
+
+</div>
+
+<div class="input-group">
+
+<label>Member ID</label>
+
+<input
+type="text"
+id="memberId">
+
+</div>
+
+<div class="input-group">
+
+<label>Branch</label>
+
+<select id="memberBranch">
+
+<option value="">
+Select Branch
+</option>
+
+</select>
+
+</div>
+
+<div class="input-group">
+
+<label>Department</label>
+
+<select id="memberDepartment">
+
+<option value="">
+Select Department
+</option>
+
+</select>
+
+</div>
+
+<div class="input-group">
+
+<label>Status</label>
+
+<select id="memberStatus">
+
+<option>Active</option>
+<option>Inactive</option>
+<option>Pending</option>
+
+</select>
+
+</div>
+
+<div class="input-group">
+
+<label>Joining Date</label>
+
+<input
+type="date"
+id="memberJoining">
+
+</div>
+
+<div class="input-group">
+
+<label>Profile Photo</label>
+
+<input
+type="file"
+id="memberPhoto"
+accept="image/*">
+
+</div>
+
+</div>
+
+<div class="modal-footer">
+
+<button
+class="secondary-btn"
+onclick="closeMemberModal()">
+
+Cancel
+
+</button>
+
+<button
+class="primary-btn"
+onclick="saveMember()">
+
+Save Member
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ========================= -->
+<!-- GLOBAL SEARCH -->
+<!-- ========================= -->
+
+<div
+id="searchModal"
+class="modal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+
+<h2>
+Search
+</h2>
+
+<button
+class="close-btn"
+onclick="closeSearch()">
+
+&times;
+
+</button>
+
+</div>
+
+<input
+type="search"
+id="globalSearch"
+placeholder="Search members...">
+
+<div
+id="searchResults">
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ========================= -->
+<!-- FULL SCREEN LOADER -->
+<!-- ========================= -->
+
+<div
+id="loadingScreen"
+class="loading-screen">
+
+<div class="spinner"></div>
+
+<h3>
+Please Wait...
+</h3>
+
+<p>
+Loading MSIM App
+</p>
 
 </div>
 
