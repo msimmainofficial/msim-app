@@ -7,19 +7,19 @@
 
 // Wait for page load
 document.addEventListener("DOMContentLoaded", () => {
+// Hide Splash Screen
 
+setTimeout(() => {
 
-    // Splash Screen Hide
+    const splash = document.getElementById("splashScreen");
 
-    setTimeout(() => {
+    if(splash){
 
-        document
-        .getElementById("splashScreen")
-        document.getElementById("splashScreen").style.display = "none";;
+        splash.classList.remove("active");
 
-    }, 2000);
+    }
 
-
+}, 2000);
 
     // Service Worker
 
