@@ -7,7 +7,17 @@
 
 // Wait for page load
 document.addEventListener("DOMContentLoaded", () => {
+if("serviceWorker" in navigator){
 
+navigator.serviceWorker.register("./sw.js")
+
+.then(()=>{
+
+console.log("PWA Ready");
+
+});
+
+}
     console.log("MSIM APP v2 Loaded");
 
     checkSession();
