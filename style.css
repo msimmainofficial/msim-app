@@ -1315,3 +1315,6 @@ font-size:26px;
 }
 
 }
+#loader{
+    display:none !important;
+}
