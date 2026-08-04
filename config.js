@@ -1,7 +1,11 @@
 /* ==========================================
    MSIM APP v2
-   Supabase Configuration
+   CONFIG.JS
 ========================================== */
+
+// ==========================
+// SUPABASE CONFIGURATION
+// ==========================
 
 const SUPABASE_URL =
 "https://cmtttmuiwgwmdqgcztgc.supabase.co";
@@ -9,21 +13,105 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
 "sb_publishable_LEJNJGx5T1BHk9JpnRD8Qg_0j1O_enx";
 
-/* Supabase CDN */
-const supabaseScript = document.createElement("script");
-supabaseScript.src =
-"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+// ==========================
+// CREATE CLIENT
+// ==========================
 
-supabaseScript.onload = () => {
-
-window.supabase =
-supabase.createClient(
+const supabase =
+window.supabase.createClient(
 SUPABASE_URL,
 SUPABASE_ANON_KEY
 );
 
-console.log("✅ Supabase Connected");
+// ==========================
+// GLOBAL VARIABLES
+// ==========================
+
+let currentUser = null;
+
+let currentPage = "homePage";
+
+let isAdmin = false;
+
+// ==========================
+// APP SETTINGS
+// ==========================
+
+const APP_CONFIG = {
+
+appName:
+"MSIM APP",
+
+organization:
+"Mission Syedi Ikram E Millat",
+
+version:
+"2.0.0",
+
+themeColor:
+"#091B3D",
+
+goldColor:
+"#FFD54A",
+
+defaultAvatar:
+"assets/default-avatar.png",
+
+logo:
+"assets/logo.png"
 
 };
 
-document.head.appendChild(supabaseScript);
+// ==========================
+// CONNECTION TEST
+// ==========================
+
+async function testConnection(){
+
+try{
+
+const { error } =
+await supabase
+.from("members")
+.select("id")
+.limit(1);
+
+if(error){
+
+console.error(
+"Supabase Connection Failed",
+error.message
+);
+
+return false;
+
+}
+
+console.log(
+"Supabase Connected Successfully"
+);
+
+return true;
+
+}catch(err){
+
+console.error(err);
+
+return false;
+
+}
+
+}
+
+// ==========================
+// STARTUP
+// ==========================
+
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+testConnection();
+
+}
+);
