@@ -1,1086 +1,550 @@
-/* ==========================================
-   MSIM APP v2
-   SCRIPT.JS
-   PART 1
-========================================== */
+// ===============================
+// MSIM APP V2 - SCRIPT.JS
+// PART 1 - CONFIG & STARTUP
+// ===============================
 
-// ==========================
-// GLOBAL VARIABLES
-// ==========================
-
-let currentScreen = "splash";
-
-let sidebarOpened = false;
-
-let loadingVisible = false;
-
-// ==========================
-// DOM READY
-// ==========================
-
-document.addEventListener(
-"DOMContentLoaded",
-async ()=>{
-
-showLoading();
-
-await testConnection();
-
-setTimeout(()=>{
-
-hideSplash();
-
-},2500);
-
-});
-
-// ==========================
-// SPLASH
-// ==========================
-
-function hideSplash(){
-
-document
-.getElementById("splashScreen")
-.classList
-.remove("active");
-
-const session =
-localStorage.getItem("msimUser");
-
-if(session){
-
-currentUser =
-JSON.parse(session);
-
-loadMemberData(currentUser);
-
-document
-.getElementById("dashboardScreen")
-.classList
-.add("active");
-
-showPage("homePage");
-
-initializeApp();
-
-showToast(
-"Welcome Back"
+// Supabase Client
+const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
 );
 
-}else{
+// Global Variables
+let currentMember = null;
+let currentAdmin = null;
 
-document
-.getElementById("loginScreen")
-.classList
-.add("active");
+// App Start
+document.addEventListener("DOMContentLoaded", async () => {
 
-}
+    console.log("MSIM APP Started");
 
-hideLoading();
+    // Internet Check
+    checkInternet();
 
-}
+    // Splash Screen
+    showSplash();
 
-// ==========================
-// SIDEBAR
-// ==========================
+    // Register Service Worker
+    registerSW();
 
-function toggleSidebar(){
-
-const sidebar =
-document.getElementById("sidebar");
-
-const overlay =
-document.getElementById("overlay");
-
-sidebar.classList.toggle("active");
-
-overlay.classList.toggle("active");
-
-sidebarOpened =
-!sidebarOpened;
-
-}
-
-function closeSidebar(){
-
-document
-.getElementById("sidebar")
-.classList
-.remove("active");
-
-document
-.getElementById("overlay")
-.classList
-.remove("active");
-
-sidebarOpened=false;
-
-}
-
-// ==========================
-// PAGE NAVIGATION
-// ==========================
-
-function showPage(pageId){
-
-document
-.querySelectorAll(".page")
-.forEach(page=>{
-
-page.classList.remove("active");
+    // Auto Login
+    await checkSavedLogin();
 
 });
 
-const page =
-document.getElementById(pageId);
+// ===============================
+// INTERNET STATUS
+// ===============================
 
-if(page){
+function checkInternet() {
 
-page.classList.add("active");
+    if (!navigator.onLine) {
+        alert("No Internet Connection");
+    }
 
-currentPage =
-pageId;
+    window.addEventListener("offline", () => {
+        alert("Internet Disconnected");
+    });
 
+    window.addEventListener("online", () => {
+        alert("Internet Connected");
+    });
 }
 
-closeSidebar();
+// ===============================
+// SPLASH SCREEN
+// ===============================
 
+function showSplash() {
+
+    const splash = document.getElementById("splashScreen");
+
+    if (!splash) return;
+
+    setTimeout(() => {
+
+        splash.style.opacity = "0";
+
+        setTimeout(() => {
+
+            splash.style.display = "none";
+
+        }, 500);
+
+    }, 2500);
 }
 
-// ==========================
-// TOAST
-// ==========================
+// ===============================
+// SERVICE WORKER
+// ===============================
 
-function showToast(message){
+function registerSW() {
 
-const toast =
-document.getElementById("toast");
+    if ("serviceWorker" in navigator) {
 
-const text =
-document.getElementById("toastMessage");
-
-text.innerText =
-message;
-
-toast.style.display =
-"block";
-
-setTimeout(()=>{
-
-toast.style.display =
-"none";
-
-},3000);
-
+        navigator.serviceWorker.register("./sw.js")
+            .then(() => {
+                console.log("Service Worker Registered");
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
 }
 
-// ==========================
+// ===============================
+// PAGE CHANGE
+// ===============================
+
+function showPage(pageId) {
+
+    document.querySelectorAll(".page").forEach(page => {
+        page.style.display = "none";
+    });
+
+    const page = document.getElementById(pageId);
+
+    if (page) {
+        page.style.display = "block";
+    }
+}
+
+// ===============================
 // LOADING
-// ==========================
+// ===============================
 
-function showLoading(){
+function showLoading() {
 
-loadingVisible=true;
+    const loading = document.getElementById("loading");
 
-document
-.getElementById("loadingScreen")
-.style.display="flex";
+    if (loading) {
+        loading.style.display = "flex";
+    }
+}
+
+function hideLoading() {
+
+    const loading = document.getElementById("loading");
+
+    if (loading) {
+        loading.style.display = "none";
+    }
+}
+        if (error || !data) {
+
+            showLoading(false);
+            alert("Invalid Mobile Number or Password");
+            return;
+
+        }
+
+        if (data.status !== "Active") {
+
+            showLoading(false);
+            alert("Your Account is Inactive");
+            return;
+
+        }
+
+        currentUser = data;
+
+        // Save Session
+        localStorage.setItem(
+            "msimUser",
+            JSON.stringify(data)
+        );
+
+        // Load Dashboard
+        loadDashboard(data);
+
+        // Hide Login Page
+        const loginPage = document.getElementById("loginPage");
+
+        if (loginPage) {
+            loginPage.style.display = "none";
+        }
+
+        // Show Dashboard
+        const dashboard = document.getElementById("dashboard");
+
+        if (dashboard) {
+            dashboard.style.display = "block";
+        }
+
+        showLoading(false);
+
+    } catch (err) {
+
+        console.log(err);
+
+        showLoading(false);
+
+        alert("Login Failed");
+
+    }
 
 }
 
-function hideLoading(){
+// --------------------------------
+// Auto Login
+// --------------------------------
 
-loadingVisible=false;
+function autoLogin() {
 
-document
-.getElementById("loadingScreen")
-.style.display="none";
+    const session =
+        localStorage.getItem("msimUser");
 
-}
+    if (!session) return;
 
-// ==========================
-// LOGOUT
-// ==========================
+    currentUser = JSON.parse(session);
 
-function logout(){
+    loadDashboard(currentUser);
 
-document
-.getElementById("logoutModal")
-.classList
-.add("active");
+    const loginPage =
+        document.getElementById("loginPage");
 
-}
+    if (loginPage) {
+        loginPage.style.display = "none";
+    }
 
-function closeLogoutModal(){
+    const dashboard =
+        document.getElementById("dashboard");
 
-document
-.getElementById("logoutModal")
-.classList
-.remove("active");
-
-}
-
-function confirmLogout(){
-
-localStorage.removeItem(
-"msimUser"
-);
-
-currentUser=null;
-
-location.reload();
-
-}
-/* ==========================================
-   LOGIN & SESSION
-========================================== */
-
-// ==========================
-// LOGIN
-// ==========================
-
-async function login(){
-
-const mobile =
-document
-.getElementById("mobile")
-.value
-.trim();
-
-const password =
-document
-.getElementById("password")
-.value
-.trim();
-
-const message =
-document
-.getElementById("loginMessage");
-
-if(!mobile || !password){
-
-message.innerText =
-"Please enter mobile number and password.";
-
-return;
+    if (dashboard) {
+        dashboard.style.display = "block";
+    }
 
 }
 
-showLoading();
+// --------------------------------
+// Logout
+// --------------------------------
 
-message.innerText =
-"Signing in...";
+function logout() {
 
-try{
+    localStorage.removeItem("msimUser");
 
-const {data,error} =
-await supabase
-.from("members")
-.select("*")
-.eq("mobile",mobile)
-.eq("password",password)
-.single();
+    location.reload();
 
-hideLoading();
+}
+// --------------------------------
+// Load Dashboard
+// --------------------------------
 
-if(error || !data){
+function loadDashboard(user) {
 
-message.innerText =
-"Invalid Mobile Number or Password.";
+    if (!user) return;
 
-return;
+    // Member Name
+    const memberName = document.getElementById("memberName");
+    if (memberName) {
+        memberName.textContent = user.name || "";
+    }
+
+    // Member ID
+    const memberId = document.getElementById("memberId");
+    if (memberId) {
+        memberId.textContent = user.member_id || "";
+    }
+
+    // Branch
+    const memberBranch = document.getElementById("memberBranch");
+    if (memberBranch) {
+        memberBranch.textContent = user.branch || "";
+    }
+
+    // Designation
+    const memberDesignation = document.getElementById("memberDesignation");
+    if (memberDesignation) {
+        memberDesignation.textContent = user.designation || "";
+    }
+
+    // Joining Date
+    const joiningDate = document.getElementById("joiningDate");
+    if (joiningDate) {
+        joiningDate.textContent = user.joining_date || "";
+    }
+
+    // Status
+    const memberStatus = document.getElementById("memberStatus");
+    if (memberStatus) {
+
+        memberStatus.textContent = user.status || "Unknown";
+
+        if (user.status === "Active") {
+            memberStatus.classList.add("active");
+        } else {
+            memberStatus.classList.add("inactive");
+        }
+    }
+
+    // Profile Photo
+    const profilePhoto = document.getElementById("profilePhoto");
+
+    if (profilePhoto) {
+
+        if (user.photo_link && user.photo_link !== "") {
+
+            profilePhoto.src = user.photo_link;
+
+        } else {
+
+            profilePhoto.src = "assets/default-avatar.png";
+
+        }
+
+    }
+
+    // ID Card Button
+    const idCardBtn = document.getElementById("idCardBtn");
+
+    if (idCardBtn) {
+
+        idCardBtn.onclick = function () {
+
+            if (user.id_card_link) {
+
+                window.open(user.id_card_link, "_blank");
+
+            } else {
+
+                alert("ID Card Not Available");
+
+            }
+
+        };
+
+    }
+
+}
+// --------------------------------
+// Loading Function
+// --------------------------------
+
+function showLoading(show) {
+
+    const loading = document.getElementById("loadingScreen");
+
+    if (!loading) return;
+
+    if (show) {
+        loading.style.display = "flex";
+    } else {
+        loading.style.display = "none";
+    }
 
 }
 
-currentUser = data;
+// --------------------------------
+// Page Navigation
+// --------------------------------
 
-localStorage.setItem(
-"msimUser",
-JSON.stringify(data)
-);
+function showPage(pageId) {
 
-loadMemberData(data);
+    const pages = document.querySelectorAll(".page");
 
-document
-.getElementById("loginScreen")
-.classList
-.remove("active");
+    pages.forEach(page => {
+        page.style.display = "none";
+    });
 
-document
-.getElementById("dashboardScreen")
-.classList
-.add("active");
+    const currentPage = document.getElementById(pageId);
 
-showPage("homePage");
-
-initializeApp();
-
-showToast(
-"Welcome " + data.name
-);
-
-}catch(err){
-
-hideLoading();
-
-console.error(err);
-
-message.innerText =
-"Unable to login.";
+    if (currentPage) {
+        currentPage.style.display = "block";
+    }
 
 }
 
-}
+// --------------------------------
+// Side Menu
+// --------------------------------
 
-// ==========================
-// LOAD MEMBER DATA
-// ==========================
+function openMenu() {
 
-function loadMemberData(user){
+    const menu = document.getElementById("sideMenu");
 
-document.getElementById("memberName").textContent =
-user.name || "-";
-
-document.getElementById("profileName").textContent =
-user.name || "-";
-
-document.getElementById("sidebarName").textContent =
-user.name || "-";
-
-document.getElementById("idName").textContent =
-user.name || "-";
-
-document.getElementById("profileMemberId").textContent =
-user.member_id || "-";
-
-document.getElementById("sidebarMemberId").textContent =
-user.member_id || "-";
-
-document.getElementById("cardMemberId").textContent =
-user.member_id || "-";
-
-document.getElementById("idMemberId").textContent =
-user.member_id || "-";
-
-document.getElementById("profileMobile").textContent =
-user.mobile || "-";
-
-document.getElementById("profileBranch").textContent =
-user.branch || "-";
-
-document.getElementById("cardBranch").textContent =
-user.branch || "-";
-
-document.getElementById("idBranch").textContent =
-user.branch || "-";
-
-document.getElementById("profileDepartment").textContent =
-user.department || "-";
-
-document.getElementById("cardDepartment").textContent =
-user.department || "-";
-
-document.getElementById("profileStatus").textContent =
-user.status || "-";
-
-document.getElementById("cardStatus").textContent =
-user.status || "-";
-
-document.getElementById("idStatus").textContent =
-user.status || "-";
-
-document.getElementById("profileJoiningDate").textContent =
-user.joining_date || "-";
-
-document.getElementById("idJoiningDate").textContent =
-user.joining_date || "-";
-
-const photo =
-user.photo ||
-APP_CONFIG.defaultAvatar;
-
-document.getElementById("profilePhoto").src =
-photo;
-
-document.getElementById("headerAvatar").src =
-photo;
-
-document.getElementById("sidebarAvatar").src =
-photo;
-
-document.getElementById("idPhoto").src =
-photo;
-
-if(user.role==="admin" || user.role==="super_admin"){
-
-isAdmin=true;
-
-document
-.getElementById("adminMenu")
-.style.display="block";
-
-}else{
-
-isAdmin=false;
-
-document
-.getElementById("adminMenu")
-.style.display="none";
+    if (menu) {
+        menu.classList.add("open");
+    }
 
 }
 
-}
-/* ==========================================
-   INITIALIZE APP
-========================================== */
+function closeMenu() {
 
-async function initializeApp(){
+    const menu = document.getElementById("sideMenu");
 
-showLoading();
-
-await loadAnnouncements();
-
-await loadDuties();
-
-await loadContacts();
-
-await loadDownloads();
-
-hideLoading();
+    if (menu) {
+        menu.classList.remove("open");
+    }
 
 }
 
-/* ==========================
-LOAD ANNOUNCEMENTS
-========================== */
+// --------------------------------
+// Refresh Member Data
+// --------------------------------
 
-async function loadAnnouncements(){
+async function refreshProfile() {
 
-try{
+    if (!currentUser) return;
 
-const {data,error}=await supabase
-.from("announcements")
-.select("*")
-.order("created_at",{ascending:false});
+    try {
 
-if(error) throw error;
+        const { data, error } = await supabase
+            .from("members")
+            .select("*")
+            .eq("member_id", currentUser.member_id)
+            .single();
 
-const home=
-document.getElementById("latestAnnouncements");
+        if (error || !data) return;
 
-const page=
-document.getElementById("announcementsContainer");
+        currentUser = data;
 
-home.innerHTML="";
-page.innerHTML="";
+        localStorage.setItem(
+            "msimUser",
+            JSON.stringify(data)
+        );
 
-if(!data || data.length===0){
+        loadDashboard(data);
 
-const html=
-"<p class='empty-text'>No announcements available.</p>";
+    } catch (err) {
 
-home.innerHTML=html;
-page.innerHTML=html;
+        console.log(err);
 
-return;
-
-}
-
-data.forEach(item=>{
-
-const card=`
-
-<div class="announcement-card">
-
-<h3>${item.title}</h3>
-
-<p>${item.description}</p>
-
-<small>
-
-${new Date(item.created_at).toLocaleDateString()}
-
-</small>
-
-</div>
-
-`;
-
-home.innerHTML+=card;
-
-page.innerHTML+=card;
-
-});
-
-}catch(err){
-
-console.error(err);
+    }
 
 }
 
-}
+// --------------------------------
+// Global Error Handler
+// --------------------------------
 
-/* ==========================
-LOAD DUTIES
-========================== */
+window.onerror = function (message, source, line, column, error) {
 
-async function loadDuties(){
+    console.error("MSIM Error:", message);
 
-if(!currentUser) return;
+    return false;
 
-try{
+};
 
-const {data,error}=await supabase
-.from("duties")
-.select("*")
-.eq("member_id",currentUser.member_id)
-.order("created_at",{ascending:false});
+// --------------------------------
+// App Ready
+// --------------------------------
 
-if(error) throw error;
+console.log("================================");
+console.log("MSIM APP V2 READY");
+console.log("Supabase Connected");
+console.log("Login System Ready");
+console.log("Dashboard Ready");
+console.log("================================");
+// --------------------------------
+// Load Duties
+// --------------------------------
 
-const home=
-document.getElementById("todayDuties");
+async function loadDuties() {
 
-const page=
-document.getElementById("dutiesContainer");
+    if (!currentUser) return;
 
-home.innerHTML="";
-page.innerHTML="";
+    try {
 
-if(!data || data.length===0){
+        const { data, error } = await supabase
+            .from("duties")
+            .select("*")
+            .eq("member_id", currentUser.member_id);
 
-const html=
-"<p class='empty-text'>No duties assigned.</p>";
+        if (error) {
+            console.log(error);
+            return;
+        }
 
-home.innerHTML=html;
-page.innerHTML=html;
+        console.log("Duties Loaded", data);
 
-return;
+    } catch (err) {
 
-}
+        console.log(err);
 
-data.forEach(item=>{
-
-const card=`
-
-<div class="duty-card">
-
-<h3>${item.title}</h3>
-
-<p>${item.description}</p>
-
-<small>
-
-Status : ${item.status}
-
-</small>
-
-</div>
-
-`;
-
-home.innerHTML+=card;
-
-page.innerHTML+=card;
-
-});
-
-}catch(err){
-
-console.error(err);
+    }
 
 }
 
-}
+// --------------------------------
+// Load Announcements
+// --------------------------------
 
-/* ==========================
-LOAD CONTACTS
-========================== */
+async function loadAnnouncements() {
 
-async function loadContacts(){
+    try {
 
-try{
+        const { data, error } = await supabase
+            .from("announcements")
+            .select("*")
+            .order("id", { ascending: false });
 
-const {data,error}=await supabase
-.from("contacts")
-.select("*")
-.order("name");
+        if (error) {
+            console.log(error);
+            return;
+        }
 
-if(error) throw error;
+        console.log("Announcements Loaded", data);
 
-const container=
-document.getElementById("contactsContainer");
+    } catch (err) {
 
-container.innerHTML="";
+        console.log(err);
 
-if(!data || data.length===0){
-
-container.innerHTML=
-"<p class='empty-text'>No contacts available.</p>";
-
-return;
+    }
 
 }
 
-data.forEach(contact=>{
+// --------------------------------
+// Load Contacts
+// --------------------------------
 
-container.innerHTML+=`
+async function loadContacts() {
 
-<div class="contact-card">
+    try {
 
-<h3>${contact.name}</h3>
+        const { data, error } = await supabase
+            .from("contacts")
+            .select("*");
 
-<p>${contact.designation}</p>
+        if (error) {
+            console.log(error);
+            return;
+        }
 
-<a href="tel:${contact.mobile}">
+        console.log("Contacts Loaded", data);
 
-${contact.mobile}
+    } catch (err) {
 
-</a>
+        console.log(err);
 
-</div>
-
-`;
-
-});
-
-}catch(err){
-
-console.error(err);
-
-}
+    }
 
 }
 
-/* ==========================
-LOAD DOWNLOADS
-========================== */
+// --------------------------------
+// App Initialize
+// --------------------------------
 
-async function loadDownloads(){
+async function initializeApp() {
 
-const container=
-document.getElementById("downloadsContainer");
+    await refreshProfile();
 
-container.innerHTML=
+    await loadDuties();
 
-"<p class='empty-text'>Downloads feature coming soon.</p>";
+    await loadAnnouncements();
 
-}
-/* ==========================================
-   ADMIN PANEL
-========================================== */
-
-/* ==========================
-SHOW ADMIN PAGE
-========================== */
-
-async function showAdminPage(section){
-
-if(!isAdmin){
-
-showToast("Access Denied");
-
-return;
+    await loadContacts();
 
 }
 
-const container =
-document.getElementById("adminContent");
+// --------------------------------
+// Start After Login
+// --------------------------------
 
-container.innerHTML =
-"<p class='empty-text'>Loading...</p>";
+if (currentUser) {
 
-switch(section){
-
-case "members":
-
-await loadMembers();
-
-break;
-
-case "branches":
-
-await loadBranches();
-
-break;
-
-case "departments":
-
-await loadDepartments();
-
-break;
-
-case "duties":
-
-await loadAdminDuties();
-
-break;
-
-case "announcements":
-
-await loadAdminAnnouncements();
-
-break;
-
-case "contacts":
-
-await loadAdminContacts();
-
-break;
+    initializeApp();
 
 }
 
-}
-
-/* ==========================
-LOAD MEMBERS
-========================== */
-
-async function loadMembers(){
-
-const container =
-document.getElementById("adminContent");
-
-try{
-
-const {data,error} =
-await supabase
-.from("members")
-.select("*")
-.order("name");
-
-if(error) throw error;
-
-container.innerHTML="";
-
-if(data.length===0){
-
-container.innerHTML=
-"<p class='empty-text'>No Members Found.</p>";
-
-return;
-
-}
-
-data.forEach(member=>{
-
-container.innerHTML+=`
-
-<div class="member-card">
-
-<h3>${member.name}</h3>
-
-<p>Member ID : ${member.member_id}</p>
-
-<p>Branch : ${member.branch}</p>
-
-<p>Department : ${member.department}</p>
-
-<p>Status : ${member.status}</p>
-
-<button
-onclick="editMember('${member.id}')">
-
-Edit
-
-</button>
-
-<button
-onclick="deleteMember('${member.id}')">
-
-Delete
-
-</button>
-
-</div>
-
-`;
-
-});
-
-}catch(err){
-
-console.error(err);
-
-container.innerHTML=
-"<p class='empty-text'>Unable to load members.</p>";
-
-}
-
-}
-
-/* ==========================
-EDIT MEMBER
-========================== */
-
-async function editMember(id){
-
-showToast(
-"Edit Member feature coming soon."
-);
-
-}
-
-/* ==========================
-DELETE MEMBER
-========================== */
-
-async function deleteMember(id){
-
-if(!confirm("Delete this member?")){
-
-return;
-
-}
-
-const {error} =
-await supabase
-.from("members")
-.delete()
-.eq("id",id);
-
-if(error){
-
-showToast("Delete Failed");
-
-return;
-
-}
-
-showToast("Member Deleted");
-
-loadMembers();
-
-}
-
-/* ==========================
-LOAD BRANCHES
-========================== */
-
-async function loadBranches(){
-
-const container =
-document.getElementById("adminContent");
-
-container.innerHTML=
-"<p class='empty-text'>Branches Module Coming Soon.</p>";
-
-}
-
-/* ==========================
-LOAD DEPARTMENTS
-========================== */
-
-async function loadDepartments(){
-
-const container =
-document.getElementById("adminContent");
-
-container.innerHTML=
-"<p class='empty-text'>Departments Module Coming Soon.</p>";
-
-}
-
-/* ==========================
-ADMIN DUTIES
-========================== */
-
-async function loadAdminDuties(){
-
-const container =
-document.getElementById("adminContent");
-
-container.innerHTML=
-"<p class='empty-text'>Duty Management Coming Soon.</p>";
-
-}
-
-/* ==========================
-ADMIN ANNOUNCEMENTS
-========================== */
-
-async function loadAdminAnnouncements(){
-
-const container =
-document.getElementById("adminContent");
-
-container.innerHTML=
-"<p class='empty-text'>Announcement Management Coming Soon.</p>";
-
-}
-
-/* ==========================
-ADMIN CONTACTS
-========================== */
-
-async function loadAdminContacts(){
-
-const container =
-document.getElementById("adminContent");
-
-container.innerHTML=
-"<p class='empty-text'>Contact Management Coming Soon.</p>";
-
-}
-/* ==========================================
-   PROFILE
-========================================== */
-
-function editProfile(){
-
-showToast(
-"Profile update feature will be available soon."
-);
-
-}
-
-/* ==========================================
-   MEMBER MODAL
-========================================== */
-
-function closeMemberModal(){
-
-document
-.getElementById("memberModal")
-.classList
-.remove("active");
-
-}
-
-function saveMember(){
-
-showToast(
-"Member Saved Successfully."
-);
-
-closeMemberModal();
-
-}
-
-/* ==========================================
-   SEARCH MEMBER
-========================================== */
-
-function searchMembers(){
-
-const keyword =
-prompt("Enter Member Name");
-
-if(!keyword){
-
-return;
-
-}
-
-showToast(
-"Searching : " + keyword
-);
-
-}
-
-/* ==========================================
-   ABOUT
-========================================== */
-
-function showAbout(){
-
-alert(
-
-"Mission Syedi Ikram E Millat\n\nOfficial Mobile Application\nVersion : " +
-
-APP_CONFIG.version
-
-);
-
-}
-
-/* ==========================================
-   CONTACT ADMIN
-========================================== */
-
-function contactAdmin(){
-
-window.location.href =
-"tel:+910000000000";
-
-}
-
-/* ==========================================
-   TOAST AUTO CLOSE
-========================================== */
-
-function hideToast(){
-
-const toast =
-document.getElementById("toast");
-
-toast.style.display =
-"none";
-
-}
-
-/* ==========================================
-   LOADING
-========================================== */
-
-function startLoading(){
-
-showLoading();
-
-}
-
-function stopLoading(){
-
-hideLoading();
-
-}
-
-/* ==========================================
-   SERVICE WORKER
-========================================== */
-
-if("serviceWorker" in navigator){
-
-window.addEventListener(
-
-"load",
-
-()=>{
-
-navigator.serviceWorker
-.register("sw.js")
-.then(()=>{
-
-console.log(
-"Service Worker Registered"
-);
-
-})
-.catch(error=>{
-
-console.error(error);
-
-});
-
-}
-
-);
-
-}
-
-/* ==========================================
-   APP READY
-========================================== */
-
-console.log(
-
-APP_CONFIG.appName +
-
-" v" +
-
-APP_CONFIG.version +
-
-" Ready"
-
-);
+console.log("MSIM APP V2 Production Script Loaded Successfully");
