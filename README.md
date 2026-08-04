@@ -36,27 +36,36 @@ Official Progressive Web Application (PWA) for **Mission Syedi Ikram E Millat**.
 ### Authentication
 
 - Secure Login
-- Session Management
 - Auto Login
+- Session Management
 - Logout
 
 ### Member Dashboard
 
 - Member Profile
-- Digital ID Card
+- Profile Photo
+- Member ID
+- Mobile Number
+- Branch
+- Department
+- Status
+- Joining Date
 - Duties
 - Announcements
 - Contact Directory
 - Downloads
+- Digital ID Card
 
 ### Admin Panel
 
+- Secure Admin Login
 - Member Management
 - Branch Management
 - Department Management
 - Duties Management
 - Announcement Management
 - Contact Management
+- Search & Filters
 
 ### Progressive Web App
 
@@ -72,7 +81,6 @@ Official Progressive Web Application (PWA) for **Mission Syedi Ikram E Millat**.
 
 ```text
 msim-app/
-
 │
 ├── index.html
 ├── style.css
@@ -95,7 +103,7 @@ msim-app/
 
 ## Database
 
-Supabase Tables
+### Supabase Tables
 
 - members
 - admins
@@ -109,34 +117,79 @@ Supabase Tables
 
 ## Installation
 
-1. Clone Repository
-2. Configure Supabase
-3. Update config.js
-4. Deploy to GitHub Pages
-5. Install App
+1. Clone the repository.
+2. Configure your Supabase project.
+3. Update `config.js` with your Supabase URL and Publishable Key.
+4. Deploy the project using GitHub Pages.
+5. Open the website and install the PWA.
+
+---
+
+## Project Roadmap
+
+### Phase 1
+
+- Splash Screen
+- Login System
+- Responsive Layout
+- PWA Setup
+- Offline Support
+
+### Phase 2
+
+- Member Dashboard
+- Sidebar Navigation
+- Member Profile
+- Digital ID Card
+
+### Phase 3
+
+- Duties
+- Announcements
+- Contacts
+- Downloads
+
+### Phase 4
+
+- Admin Panel
+- Member Management
+- Branch Management
+- Department Management
+- Duty Management
+
+### Phase 5
+
+- QR Code
+- Push Notifications
+- Performance Optimization
+- Security Improvements
 
 ---
 
 ## Version
 
-Current Version
-
 ```
-2.0.0
+Version 2.0.0
 ```
 
 ---
 
 ## Status
 
-Development in Progress
+🚧 Under Development
 
 ---
 
 ## License
 
-Internal Project
+© 2026 Mission Syedi Ikram E Millat
 
-Mission Syedi Ikram E Millat
+All Rights Reserved.
 
-All Rights Reserved © 2026
+---
+
+## Developer Notes
+
+This project is developed as the official Progressive Web Application (PWA) for Mission Syedi Ikram E Millat.
+
+The application is designed with a mobile-first approach using HTML5, CSS3, Vanilla JavaScript, Supabase and GitHub Pages, providing a fast, secure and installable experience for members and administrators.
